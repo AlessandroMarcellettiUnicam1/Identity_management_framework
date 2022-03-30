@@ -1,10 +1,15 @@
-
 #!/bin/bash
 
 
 docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
+NETWORK=$8
 ./networkDown.sh
-#./startFabric.sh javascript "false"
+if [ "$NETWORK" == "up" ] ; then
+
+ ./startFabric.sh javascript "false"
+
+fi
+
 #docker network connect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
 cd main
 sleep 1

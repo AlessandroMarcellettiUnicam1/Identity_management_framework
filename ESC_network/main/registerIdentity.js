@@ -23,7 +23,7 @@ async function main(sensorNumber) {
         console.log(`Wallet path: ${walletPath}`);
 	const identityName = 'sensor'+sensorNumber;
         // Check to see if we've already enrolled the user.
-        const identity = await wallet.get('admin');
+        const identity = await wallet.get(identityName);
         if (!identity) {
             console.log('An identity for the user "sensor" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
@@ -33,7 +33,7 @@ async function main(sensorNumber) {
 
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: 'admin', discovery: { enabled: true, asLocalhost: true } });
+        await gateway.connect(ccp, { wallet, identity: identityName, discovery: { enabled: true, asLocalhost: true } });
  	console.log('Connected to gateway');
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork('mychannel');
@@ -54,9 +54,11 @@ async function main(sensorNumber) {
 
             }, 100*i);
         }*/
+ 	const sensorIdentity = "sensor1:Org1MSP";
+        let sensorid = await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "", "");
+        const newSensorid = (sensorid.toString()).replace('"', '').replace('"', '');
         
-        await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "");
-	console.log('transaction done');
+	console.log(newSensorid);
 	
 	/*const rawResult = await contract.evaluateTransaction('queryAllDetections');
 	let result = rawResult.toString();
@@ -68,14 +70,19 @@ async function main(sensorNumber) {
 	    Test1: "test",
             Test2: "test" 
 	};
+	let result = await contract.evaluateTransaction('getSingleIdentity', newSensorid);
+	console.log(`*** Result prima di update: ${Buffer.from(result.toString())}`);
 	
-	await contract.submitTransaction('updateIdentityRights', identityName, "sensor", "", "", JSON.stringify(rights));
-	let result3 = await contract.evaluateTransaction('getSingleIdentity', identityName);
+	await contract.submitTransaction('updateIdentityRights', newSensorid, "sensor", "", "", "", JSON.stringify(rights));
+	
+	let result3 = await contract.evaluateTransaction('getSingleIdentity', newSensorid);
 	console.log(`*** Result: ${Buffer.from(result3.toString())}`);
 	
-	await contract.submitTransaction('dismissIdentity', identityName);
-	let result4 = await contract.evaluateTransaction('getSingleIdentity', identityName);
+	await contract.submitTransaction('dismissIdentity', newSensorid);
+	let result4 = await contract.evaluateTransaction('getSingleIdentity', newSensorid);
 	console.log(`*** Result: ${Buffer.from(result4.toString())}`);
+	
+	
 	
 	process.exit();
     } catch (error) {
@@ -84,4 +91,4 @@ async function main(sensorNumber) {
     }
 }
 
-main(2);
+main(1);

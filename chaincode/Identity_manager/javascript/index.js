@@ -7,4 +7,4 @@
 const identity_manager = require('./lib/identity_manager');
 
 module.exports.identity_manager = identity_manager;
-module.exports.contracts = [ identity_manager ];
+module.exports.contracts = [ identity_manager];

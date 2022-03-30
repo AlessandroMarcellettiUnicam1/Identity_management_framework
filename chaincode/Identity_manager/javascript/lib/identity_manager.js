@@ -9,57 +9,61 @@ const { Contract } = require('fabric-contract-api');
 
 class identity_manager extends Contract {
 
-    async initLedger(ctx) {
+    /*async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
         
         console.info('============= END : Initialize Ledger ===========');
-    }
+    }*/
     
-    async provideIdentity(ctx, identityName, type, ip, coord){
-     //const id = identityName + ':' + ctx.clientIdentity.getID();
+    async provideIdentity(ctx, identityName, type, endpoint, uri, coord){
+     const id = identityName + ':' + ctx.stub.getCreator().mspid;
      //const id = ctx.clientIdentity.getID();
     	const identity = {
-            ID: identityName,
+            ID: id,
             State: "ACTIVE",
             Type: type, 
-            Ip: ip,
-            Coordinates: coord,
+            Opt_info: {
+            	Endopint: endpoint,
+            	URI: uri,
+            	Coordinates: coord
+            },
             Rights: {} 
         };
+    
         //const key = "identity" + ID
-        await ctx.stub.putState(identityName, Buffer.from(JSON.stringify(identity)));
-        console.info(`INFO: ${identity} initialized`);
+      await ctx.stub.putState(id, Buffer.from(JSON.stringify(identity)));
+      return JSON.stringify(id);
     }
     
-    async updateIdentityRights(ctx, identityName, type, ip, coord, rights){
-     //const identity = await ctx.stub.getState(identityName);
-     //const jsonIdentity = JSON.parse(identity.toString());
-     
-     const jsonRights = JSON.parse(rights.toString());
-     const identity = {
-      	     State: "ACTIVE",
-            ID: identityName,
+    async updateIdentityRights(ctx, identityName, type, endpoint, uri, coord, rights){
+
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    const jsonRights = JSON.parse(rights.toString());
+    const identity = {
+            ID: id,
+            State: "ACTIVE",
             Type: type, 
-            Ip: ip,
-            Coordinates: coord,
+            Opt_info: {
+            	Endopint: endpoint,
+            	URI: uri,
+            	Coordinates: coord
+            },
             Rights: jsonRights 
         };
-        //const key = "identity" + ID
-     await ctx.stub.putState(identityName, Buffer.from(JSON.stringify(identity)));
-     console.info(`INFO: ${identity} initialized`);
+
+     await ctx.stub.putState(id, Buffer.from(JSON.stringify(identity)));
     }
     
     async dismissIdentity(ctx, identityName){
      const identity = await ctx.stub.getState(identityName);
      let jsonIdentity = JSON.parse(identity.toString());
      
-     jsonIdentity.State = "DEACTIVATED";
+     jsonIdentity.State = "DISMISSED";
      await ctx.stub.putState(identityName, Buffer.from(JSON.stringify(jsonIdentity)));
-     console.info(`INFO: ${identity} initialized`);
     }
 
 
-    async queryAllDetections(ctx) {
+    async queryAllIdentities_developer(ctx) {
         const allResults = [];
         for await (const {key, value} of ctx.stub.getStateByRange('','')) {
             const strValue = Buffer.from(value).toString('utf8');
@@ -81,6 +85,8 @@ class identity_manager extends Contract {
         const identity = await ctx.stub.getState(id);
         return JSON.stringify(identity.toString());
     }
+    
+    
     
     
     /*async queryAllFlows(ctx) {
