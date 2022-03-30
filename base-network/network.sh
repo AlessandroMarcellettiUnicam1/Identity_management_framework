@@ -384,7 +384,7 @@ function deployCC() {
 ## Call the script to isntall and instantiate a chaincode on the channel
 function deployCCESC() {
 
-  scripts/deployCCESC.sh $CHANNEL_NAME $CC_SRC_LANGUAGE $VERSION $CLI_DELAY $MAX_RETRY $VERBOSE
+  scripts/deployCCESC.sh $CHANNEL_NAME $CC_SRC_LANGUAGE $VERSION $CLI_DELAY $MAX_RETRY $VERBOSE $CC_TO_DEPLOY 
 
   if [ $? -ne 0 ]; then
     echo "ERROR !!! Deploying chaincode failed"
@@ -513,6 +513,10 @@ while [[ $# -ge 1 ]] ; do
     ;;
   -i )
     IMAGETAG="$2"
+    shift
+    ;;
+    -cName )
+    CC_TO_DEPLOY="$2"
     shift
     ;;
   -verbose )

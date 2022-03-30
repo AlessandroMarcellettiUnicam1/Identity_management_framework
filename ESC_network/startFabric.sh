@@ -12,6 +12,7 @@ export MSYS_NO_PATHCONV=1
 starttime=$(date +%s)
 CC_SRC_LANGUAGE=${1:-"go"}
 DEPLOY=$2
+CC_TO_DEPLOY="$3"
 CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
 if [ "$CC_SRC_LANGUAGE" != "go" -a "$CC_SRC_LANGUAGE" != "golang" -a "$CC_SRC_LANGUAGE" != "java" \
  -a  "$CC_SRC_LANGUAGE" != "javascript"  -a "$CC_SRC_LANGUAGE" != "typescript" ] ; then
@@ -33,7 +34,7 @@ if [ "$DEPLOY" == "false" ] ;then
 	./network.sh down
 	./network.sh up createChannel -ca -s couchdb
 fi
-./network.sh deployCCESC -l ${CC_SRC_LANGUAGE}
+./network.sh deployCCESC -l ${CC_SRC_LANGUAGE} -cName ${CC_TO_DEPLOY} 
 popd
 
 cat <<EOF

@@ -10,62 +10,99 @@ const path = require('path');
 const fs = require('fs');
 const { exit } = require('process');
 
+let ccp;
+let wallet;
+let contract = {};
 
-async function main(sensorNumber) {
+const argv = yargs
+    .command('identityName','blabla',{
+        walletName: {
+            description: 'wallet identity to use',
+            alias: 'i',
+            type: 'string',
+        },
+        contractName: {
+            description: 'name of the contract to use',
+            alias: 'c',
+            type: 'string',
+        }}).help().alias('help', 'h').argv; 
+        
+        
+        /*
+        .command('operation',{
+        operation: {
+            description: 'function to invoke in the contract',
+            alias: 'o',
+            type: 'string',
+        }})
+        .command('contractName',{
+        contractName: {
+            description: 'name of the contract to use',
+            alias: 'c',
+            type: 'string',
+        }})
+        */
+
+async function main(walletName) {
     try {
-        // load the network configuration
+        const identity = await takeUserWallet(walletName);
+        await getGatewayChaincode(walletName);
+        await invokeFunction();
+        
+	
+ 	//const sensorIdentity = "sensor1:Org1MSP";
+        
+
+	
+	//process.exit();
+    } catch (error) {
+        console.error(`Failed to evaluate transaction: ${error}`);
+        process.exit(1);
+    }
+}
+
+async function takeUserWallet(walletName){
+	// load the network configuration
         const ccpPath = path.resolve(__dirname, '..', '..', 'base-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
-	const identityName = 'sensor'+sensorNumber;
+	//const identityName = 'sensor'+sensorNumber;
         // Check to see if we've already enrolled the user.
-        const identity = await wallet.get(identityName);
+        const identity = await wallet.get(walletName);
         if (!identity) {
             console.log('An identity for the user "sensor" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
             return;
         }
+        return identity;
+}
 
-
-        // Create a new gateway for connecting to our peer node.
-        const gateway = new Gateway();
-        await gateway.connect(ccp, { wallet, identity: identityName, discovery: { enabled: true, asLocalhost: true } });
+async function getGatewayChaincode(walletName, contractName){
+	const gateway = new Gateway();
+        await gateway.connect(ccp, { wallet, identity: walletName, discovery: { enabled: true, asLocalhost: true } });
  	console.log('Connected to gateway');
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork('mychannel');
 	 console.log('connected to channel');
         // Get the contract from the network.
-        const contract = network.getContract('identity_manager');
-	console.log('Connected to contract');
-	
-        /*for(let i =1; i<=numberSensors; i++){
-            setTimeout(() => {
-                if(i == numberSensors){
-                    contract.submitTransaction('createSensor', i).then((res) => {
-                        process.exit();
-                    });
-                }else{
-                    contract.submitTransaction('createSensor', i);
-                }
+        contract = network.getContract('ESC_network', contractName);
+	//console.log('Connected to contract');
+}
 
-            }, 100*i);
-        }*/
- 	const sensorIdentity = "sensor1:Org1MSP";
-        let sensorid = await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "", "");
+async function invokeFunction(){
+	
+	const c = await contract.submitTransaction('test');
+	console.log(Buffer.from(c).toString());
+	console.log("transaction completed");
+	/*let sensorid = await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "", "");
         const newSensorid = (sensorid.toString()).replace('"', '').replace('"', '');
         
 	console.log(newSensorid);
 	
-	/*const rawResult = await contract.evaluateTransaction('queryAllDetections');
-	let result = rawResult.toString();
-	console.log(`*** Result: ${result}`);*/
-	
-	//let result2 = await contract.evaluateTransaction('getSingleIdentity', identityName);
-	//console.log(`*** Result: ${result2.toString()}`);
 	const rights = {
 	    Test1: "test",
             Test2: "test" 
@@ -80,15 +117,9 @@ async function main(sensorNumber) {
 	
 	await contract.submitTransaction('dismissIdentity', newSensorid);
 	let result4 = await contract.evaluateTransaction('getSingleIdentity', newSensorid);
-	console.log(`*** Result: ${Buffer.from(result4.toString())}`);
-	
-	
-	
-	process.exit();
-    } catch (error) {
-        console.error(`Failed to evaluate transaction: ${error}`);
-        process.exit(1);
-    }
+	console.log(`*** Result: ${Buffer.from(result4.toString())}`);*/
+
 }
 
-main(1);
+
+main(argv.walletName, argv.contractName);

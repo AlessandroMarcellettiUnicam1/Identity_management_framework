@@ -3,10 +3,17 @@
 
 docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
 NETWORK=$8
-./networkDown.sh
-if [ "$NETWORK" == "up" ] ; then
+CCNAME=$9
 
- ./startFabric.sh javascript "false"
+if [ "$NETWORK" == "up" ] ; then
+ ./networkDown.sh
+ ./startFabric.sh javascript "false" ${CCNAME}
+
+elif [ "$NETWORK" == "down" ] ; then
+ ./networkDown.sh
+ 
+elif [ "$NETWORK" == "deploy" ] ; then
+./startFabric.sh javascript "true" ${CCNAME}
 
 fi
 
