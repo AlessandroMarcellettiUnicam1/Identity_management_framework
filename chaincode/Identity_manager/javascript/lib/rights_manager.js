@@ -16,16 +16,36 @@ class rights_manager extends Contract {
     async createRights(ctx, identityName, requestedApp){
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
     //TODO CREATE RIGHTS BASED ON APPLICATION
-    const applicationRights = await ctx.stub.getState(requestedApp);
+    const applicationRightsRaw = await ctx.stub.invokeChaincode(requestedApp, ['getRightsForApp', requestedApp], 'mychannel');
+    //const appRights = applicationRightsRaw.payload;
+    const appRights = JSON.parse(Buffer.from(applicationRightsRaw.payload).toString('utf8'));
+    /*const appRights = {
+        	ID: "ESC_network",
+        	AllowedOrgs: ['Org1MSP'],
+        	AllowedOp: [{Obj: 'LightSensor1', Op: 'WRITE'}]
+        };*/
+    
+    for (let i = 0; i < appRights.AllowedOrgs.length; i++) {
+    	if(appRights.AllowedOrgs[i] == ctx.stub.getCreator().mspid){
+    		for (let t = 0; t < appRights.AllowedOp.length; t++) {
+    			if(appRights.AllowedOp[t].Obj == identityName){
+    				const rights = {
+	    				AppName: requestedApp,
+            				ApprovedMSP: appRights.AllowedOrgs[i],
+            				AllowedObj: appRights.AllowedOp[t].Obj,
+            				AllowedOp: appRights.AllowedOp[t].Op,
+				};
+				let identityClass = new Identity();
+				identityClass.updateIdentityRights(id, JSON.stringify(rights));
+    			}
+    		}
+    	}
+    }
+    
+    return applicationRightsRaw.payload.toString('utf8');
     
     
-    //ctx.stub.invokeChaincode("ESC_network", arr, 'mychannel');
-    
-    
-    //let identityClass = new Identity();
-    //identityClass.updateIdentityRights(id);
-    
-    return JSON.stringify(applicationRights);
+
     }
     
     async updateRights(ctx, identityName){

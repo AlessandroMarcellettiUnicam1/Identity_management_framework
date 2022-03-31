@@ -12,7 +12,9 @@ const { exit } = require('process');
 
 let ccp;
 let wallet;
-let contract = {};
+let contractESC = {};
+let contractIdentity = {};
+let contractRights = {};
 
 const argv = yargs
     .command('identityName','blabla',{
@@ -89,15 +91,33 @@ async function getGatewayChaincode(walletName, contractName){
         const network = await gateway.getNetwork('mychannel');
 	 console.log('connected to channel');
         // Get the contract from the network.
-        contract = network.getContract('ESC_network', contractName);
+        contractESC = network.getContract('ESC_network', 'ESC_network');
+        contractRights = network.getContract('Identity_manager', 'rights_manager');
+        contractIdentity = network.getContract('Identity_manager', 'identity_manager');
 	//console.log('Connected to contract');
 }
 
-async function invokeFunction(){
-	
-	const c = await contract.submitTransaction('test');
+async function invokeFunction(walletName){
+
+	//await contractIdentity.submitTransaction('provideIdentity', walletName, "sensor", "", "", "");
+        //const newSensorid = (sensorid.toString());
+        console.log("transaction completed 1");
+        
+	const c = await contractESC.submitTransaction('test');
 	console.log(Buffer.from(c).toString());
-	console.log("transaction completed");
+	console.log("transaction completed 2");
+	
+	const c1 = await contractRights.submitTransaction('createRights', 'sensor1', 'ESC_network');
+	console.log(Buffer.from(c1).toString());
+	
+	//const appRights = JSON.parse(Buffer.from(c1).toString());
+	
+	let result3 = await contractIdentity.evaluateTransaction('getSingleIdentity', walletName);
+	console.log(`*** Result: ${Buffer.from(result3.toString())}`);
+	
+        console.log("transaction completed");
+	
+	
 	/*let sensorid = await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "", "");
         const newSensorid = (sensorid.toString()).replace('"', '').replace('"', '');
         

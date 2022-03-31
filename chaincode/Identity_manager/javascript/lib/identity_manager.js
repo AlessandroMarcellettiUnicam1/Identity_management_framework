@@ -48,25 +48,15 @@ class identity_manager extends Contract {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
     const identity = await ctx.stub.getState(identityName);
     
-    if(identity.State == "DISMISSED"){
-    	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
-    }
-    
-    const jsonRights = JSON.parse(rights.toString());
-    /*const identity = {
-            ID: id,
-            State: "ACTIVE",
-            Type: type, 
-            Opt_info: {
-            	Endopint: endpoint,
-            	URI: uri,
-            	Coordinates: coord
-            },
-            Rights: jsonRights 
-        };*/
-        
+    //if(identity.State == "DISMISSED"){
+   // 	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
+    //}
+    const r = rights;
+     const jsonRights = JSON.parse(r.toString());
+     const jsonIdentity = JSON.parse(identity.toString());
      
-     identity.rights = jsonRights;
+     jsonIdentity.rights = jsonRights;
+     
      await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
     }
     
@@ -111,7 +101,7 @@ class identity_manager extends Contract {
     async getSingleIdentity(ctx, identityName){
     	const id = identityName + ':' + ctx.stub.getCreator().mspid;
         const identity = await ctx.stub.getState(id);
-        return JSON.stringify(identity.toString());
+        return JSON.stringify(identity);
     }
     
     

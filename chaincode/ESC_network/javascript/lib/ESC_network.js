@@ -14,7 +14,7 @@ class ESC_network extends Contract {
         	ID: "ESC_network",
         	AllowedOrgs: ['Org1'],
         	AllowedOp: [{Obj: 'LightSensor1', Op: 'WRITE'}]
-        }
+        };
         
         await ctx.stub.putState('ESC_network', Buffer.from(JSON.stringify(appRights)));
         
@@ -135,14 +135,21 @@ class ESC_network extends Contract {
     async test(ctx){
     	const appRights = {
         	ID: "ESC_network",
-        	AllowedOrgs: ['Org1'],
-        	AllowedOp: [{Obj: 'LightSensor1', Op: 'WRITE'}]
-        }
+        	AllowedOrgs: ['Org1MSP'],
+        	AllowedOp: [{Obj: 'sensor1', Op: 'WRITE'}]
+        };
         
         await ctx.stub.putState('ESC_network', Buffer.from(JSON.stringify(appRights)));
         return JSON.stringify(appRights);
         
     }
+    
+    async getRightsForApp(ctx, requestedApp){
+    	const rights = await ctx.stub.getState(requestedApp);
+    	return rights.toString();
+    }
+    
+    
     async queryAllDetections(ctx) {
         const startKey = 'DETECTION0';
         const endKey = 'DETECTION99999999999999999';
