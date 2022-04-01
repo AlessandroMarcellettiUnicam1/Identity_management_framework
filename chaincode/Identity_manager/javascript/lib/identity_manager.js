@@ -13,6 +13,7 @@ class identity_manager extends Contract {
    constructor() {
         // Unique smart contract name when multiple contracts per chaincode
         super('identity_manager');
+        
    }
 
     /* Function for creating a new Identity associated to the caller
@@ -30,7 +31,10 @@ class identity_manager extends Contract {
 		    	URI: uri,
 		    	Coordinates: coord
 		    },
-		    Rights: {} 
+		    Rights: {
+		    	AppName: [],
+		    	AllowedOp: []
+		    } 
 		};
 	    
 	      await ctx.stub.putState(id, Buffer.from(JSON.stringify(identity)));
@@ -48,16 +52,17 @@ class identity_manager extends Contract {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
     const identity = await ctx.stub.getState(identityName);
     
-    //if(identity.State == "DISMISSED"){
-   // 	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
-    //}
-    const r = rights;
+    if(identity.State == "DISMISSED"){
+    	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
+    }
+
      const jsonRights = JSON.parse(r.toString());
      const jsonIdentity = JSON.parse(identity.toString());
      
      jsonIdentity.rights = jsonRights;
      
      await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+     
     }
     
     /* Function for dismissing an idenitty
@@ -101,7 +106,7 @@ class identity_manager extends Contract {
     async getSingleIdentity(ctx, identityName){
     	const id = identityName + ':' + ctx.stub.getCreator().mspid;
         const identity = await ctx.stub.getState(id);
-        return JSON.stringify(identity);
+        return identity.toString();
     }
     
     

@@ -10,13 +10,7 @@ class ESC_network extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Application Rights ===========');
-        const appRights = {
-        	ID: "ESC_network",
-        	AllowedOrgs: ['Org1'],
-        	AllowedOp: [{Obj: 'LightSensor1', Op: 'WRITE'}]
-        };
         
-        await ctx.stub.putState('ESC_network', Buffer.from(JSON.stringify(appRights)));
         
         /*const detections = [
             {
@@ -136,7 +130,7 @@ class ESC_network extends Contract {
     	const appRights = {
         	ID: "ESC_network",
         	AllowedOrgs: ['Org1MSP'],
-        	AllowedOp: [{Obj: 'sensor1', Op: 'WRITE'}]
+        	AllowedOp: [{Type: 'LightSensor', Op: 'WRITE'}]
         };
         
         await ctx.stub.putState('ESC_network', Buffer.from(JSON.stringify(appRights)));

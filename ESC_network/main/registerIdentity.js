@@ -49,7 +49,7 @@ async function main(walletName) {
     try {
         const identity = await takeUserWallet(walletName);
         await getGatewayChaincode(walletName);
-        await invokeFunction();
+        await invokeFunction(walletName);
         
 	
  	//const sensorIdentity = "sensor1:Org1MSP";
@@ -99,24 +99,25 @@ async function getGatewayChaincode(walletName, contractName){
 
 async function invokeFunction(walletName){
 
-	//await contractIdentity.submitTransaction('provideIdentity', walletName, "sensor", "", "", "");
+        await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor", "", "", "");
         //const newSensorid = (sensorid.toString());
-        console.log("transaction completed 1");
+        console.log("Identity created");
         
 	const c = await contractESC.submitTransaction('test');
-	console.log(Buffer.from(c).toString());
-	console.log("transaction completed 2");
+	//console.log(Buffer.from(c).toString());
+	console.log(`rights on app initialized with value:${Buffer.from(c).toString()}`);
 	
-	const c1 = await contractRights.submitTransaction('createRights', 'sensor1', 'ESC_network');
+	const c1 = await contractRights.submitTransaction('createRights', walletName, 'ESC_network');
 	console.log(Buffer.from(c1).toString());
+	console.log(`rights assigned to device: ${walletName}`);
 	
 	//const appRights = JSON.parse(Buffer.from(c1).toString());
 	
 	let result3 = await contractIdentity.evaluateTransaction('getSingleIdentity', walletName);
-	console.log(`*** Result: ${Buffer.from(result3.toString())}`);
+	console.log(`*** Identity updated with rights: ${Buffer.from(result3).toString()}`);
 	
-        console.log("transaction completed");
-	
+        console.log("Process terminated");
+	process.exit();
 	
 	/*let sensorid = await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "", "");
         const newSensorid = (sensorid.toString()).replace('"', '').replace('"', '');

@@ -3,7 +3,7 @@
 
 docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
 NETWORK=$8
-CCNAME=$9
+CCNAME='Identity_manager'
 CCNAME2='ESC_network'
 
 if [ "$NETWORK" == "up" ] ; then
