@@ -31,10 +31,10 @@ class identity_manager extends Contract {
 		    	URI: uri,
 		    	Coordinates: coord
 		    },
-		    Rights: {
-		    	AppName: [],
-		    	AllowedOp: []
-		    } 
+		    Rights: [{
+		    	AppName: '',
+		    	AllowedOp: ''
+		    }]
 		};
 	    
 	      await ctx.stub.putState(id, Buffer.from(JSON.stringify(identity)));

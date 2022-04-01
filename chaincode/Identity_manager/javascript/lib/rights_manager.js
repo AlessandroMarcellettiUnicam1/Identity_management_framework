@@ -39,11 +39,18 @@ class rights_manager extends Contract {
     const applicationRightsRaw = await ctx.stub.invokeChaincode(requestedApp, ['getRightsForApp', requestedApp], 'mychannel');
 
     const appRights = JSON.parse(Buffer.from(applicationRightsRaw.payload).toString('utf8'));
-    /*const appRights = {
+    /*
+    const appRights = {
         	ID: "ESC_network",
-        	AllowedOrgs: ['Org1MSP'],
-        	AllowedOp: [{Obj: 'sensor1', Op: 'WRITE'}]
-        };*/
+        	AllowedOrgs: [{
+        		MSPName: 'Org1MSP',
+        		AllowedOp: [{
+        			Type: 'LightSensor', 
+        			Op: 'WRITE'}]
+        		}]
+        };
+        
+        */
         
     const identity = await ctx.stub.getState(id);
     
@@ -54,20 +61,20 @@ class rights_manager extends Contract {
     const jsonIdentity = JSON.parse(identity.toString());
     
     for (let i = 0; i < appRights.AllowedOrgs.length; i++) {
-    	if(appRights.AllowedOrgs[i] == ctx.stub.getCreator().mspid){
+    	if(appRights.AllowedOrgs[i].MSPName == ctx.stub.getCreator().mspid){
     		
-    		for (let t = 0; t < appRights.AllowedOp.length; t++) {
-    			if(appRights.AllowedOp[t].Type == jsonIdentity.Type){
-    				/*const jsonRights = {
-	    				AppName: requestedApp,
-            				ApprovedMSP: appRights.AllowedOrgs[i],
-            				AllowedObj: appRights.AllowedOp[t].Obj,
-            				AllowedOp: appRights.AllowedOp[t].Op,
-				};*/
-				  
+    		for (let t = 0; t < appRights.AllowedOrgs[i].AllowedOp.length; t++) {
+    			if(appRights.AllowedOrgs[i].AllowedOp[t].Type == jsonIdentity.Type){
+					
+				    const identityRights = {
+				    	AppName : appRights.ID,
+				    	AllowedOp : appRights.AllowedOrgs[i].AllowedOp[t].Op
+				    };
 				    
-				    jsonIdentity.Rights.AppName.push(appRights.ID);
-				    jsonIdentity.Rights.AllowedOp.push(appRights.AllowedOp[t].Op);
+				    jsonIdentity.Rights.push(identityRights);
+				    
+				    //AppName.push(appRights.ID);
+				    //jsonIdentity.Rights.AllowedOp.push(appRights.AllowedOrgs.AllowedOp[t].Op);
 				    
 				    
 				    await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
@@ -93,22 +100,29 @@ class rights_manager extends Contract {
     }
     
     
-    async removeRights(ctx, identityName){
+    async removeRights(ctx, identityName, appId){
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    //TODO CREATE RIGHTS BASED ON APPLICATION
-    const identity = await ctx.stub.getState(id);
-    
-    if(identity.State == "DISMISSED"){
-    	throw new Error(`ERROR: you cannot removed rights to a dismissed identity`);
-    }
-
+    //TODO REMOVE RIGHTS BASED ON APPLICATION
+    const identity = await ctx.stub.getState(id);  
     const jsonIdentity = JSON.parse(identity.toString());
     
-    const blankRights: {
-		    	AppName: [],
-		    	AllowedOp: []
+    if(jsonIdentity.State == "DISMISSED"){
+    	throw new Error(`ERROR: you cannot removed rights to a dismissed identity`);
+    }
+    
+    
+    for (let i = 0; i < jsonIdentity.Rights.length; i++) {
+    	if(jsonIdentity.Rights[i].AppName == appId){
+    		const blankRights: {
+		    	AppName: '',
+		    	AllowedOp: ''
 		    };
-    jsonIdentity.Rights = blankRights;
+		jsonIdentity.Rights[i] = blankRights;
+    	}
+    }
+    
+    
+
     await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
     return jsonIdentity.toString();
     }

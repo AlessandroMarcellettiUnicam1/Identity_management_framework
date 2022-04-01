@@ -129,8 +129,12 @@ class ESC_network extends Contract {
     async test(ctx){
     	const appRights = {
         	ID: "ESC_network",
-        	AllowedOrgs: ['Org1MSP'],
-        	AllowedOp: [{Type: 'LightSensor', Op: 'WRITE'}]
+        	AllowedOrgs: [{
+        		MSPName: 'Org1MSP',
+        		AllowedOp: [{
+        			Type: 'LightSensor', 
+        			Op: 'WRITE'}]
+        		}]
         };
         
         await ctx.stub.putState('ESC_network', Buffer.from(JSON.stringify(appRights)));
