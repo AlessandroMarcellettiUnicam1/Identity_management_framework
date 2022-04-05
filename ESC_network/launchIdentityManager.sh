@@ -15,7 +15,7 @@ elif [ "$NETWORK" == "down" ] ; then
  ./networkDown.sh
  
 elif [ "$NETWORK" == "deploy" ] ; then
-./startFabric.sh javascript "true" ${CCNAME}
+./startFabric.sh javascript "false" ${CCNAME}
 
 fi
 

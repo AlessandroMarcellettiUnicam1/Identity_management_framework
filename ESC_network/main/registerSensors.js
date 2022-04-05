@@ -49,7 +49,7 @@ async function main(numberSensors) {
         const network = await gateway.getNetwork('mychannel');
 
         // Get the contract from the network.
-        const contract = network.getContract('ESC_network');
+        const contract = network.getContract('ESC_network', 'ESC_network');
 
         for(let i =1; i<=numberSensors; i++){
             setTimeout(() => {

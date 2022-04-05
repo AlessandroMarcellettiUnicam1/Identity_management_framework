@@ -3,8 +3,8 @@
 
 
 docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
-./networkDown.sh
-./startFabric.sh javascript
+#./networkDown.sh
+#./startFabric.sh javascript
 docker network connect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
 cd main
 sleep 1

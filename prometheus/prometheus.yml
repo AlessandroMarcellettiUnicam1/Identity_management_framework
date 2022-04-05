@@ -21,15 +21,26 @@ rule_files:
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: 'prometheus'
-
+    static_configs:
+    - targets: ['localhost:9090']
+  - job_name: 'orderer'
+    static_configs:
+      - targets: ["orderer.example.com:8443"]
+  - job_name: "peer0_org1"
+    static_configs:
+      - targets: ["peer0.org1.example.com:9443"]
+  - job_name: "peer1_org1"
+    static_configs:
+      - targets: ["peer1.org1.example.com:9444"]
+  - job_name: "peer0_org2"
+    static_configs:
+      - targets: ["peer0.org2.example.com:9445"]
+  #- job_name: 'hyperledger_metrics'
+  #  static_configs:
+  #   - targets: ["172.17.0.1:8443", "172.17.0.1:9443", "172.17.0.1:9444", "172.17.0.1:9445"]
+  
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
 
-    static_configs:
-    - targets: ['localhost:9090']
-
-  - job_name: 'hyperledger_metrics'
-    static_configs:
-      - targets: ['peer0.org1.example.com:9443', 'peer1.org1.example.com:9443', 'peer0.org2.example.com:9443']
 
 

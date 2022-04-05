@@ -39,19 +39,7 @@ class rights_manager extends Contract {
     const applicationRightsRaw = await ctx.stub.invokeChaincode(requestedApp, ['getRightsForApp', requestedApp], 'mychannel');
 
     const appRights = JSON.parse(Buffer.from(applicationRightsRaw.payload).toString('utf8'));
-    /*
-    const appRights = {
-        	ID: "ESC_network",
-        	AllowedOrgs: [{
-        		MSPName: 'Org1MSP',
-        		AllowedOp: [{
-        			Type: 'LightSensor', 
-        			Op: 'WRITE'}]
-        		}]
-        };
-        
-        */
-        
+
     const identity = await ctx.stub.getState(id);
     
     if(identity.State == "DISMISSED"){
@@ -84,20 +72,19 @@ class rights_manager extends Contract {
     	}
     }
     
-    //return 'size of orgs: ' + appRights.AllowedOrgs.length + ' size of op: ' + appRights.AllowedOp.length;
     return "No identity can be found for this ID";
     
     }
     
     //TODO maybe useless, has the same functionalities of the assign
-    async updateRights(ctx, identityName){
+    /*async updateRights(ctx, identityName){
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
     //TODO CREATE RIGHTS BASED ON APPLICATION
     let identityClass = new Identity();
     identityClass.updateIdentityRights(id);
     
     return JSON.stringify(id);
-    }
+    }*/
     
     
     async removeRights(ctx, identityName, appId){
@@ -113,7 +100,7 @@ class rights_manager extends Contract {
     
     for (let i = 0; i < jsonIdentity.Rights.length; i++) {
     	if(jsonIdentity.Rights[i].AppName == appId){
-    		const blankRights: {
+    		const blankRights = {
 		    	AppName: '',
 		    	AllowedOp: ''
 		    };

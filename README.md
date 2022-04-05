@@ -82,6 +82,7 @@ In order to analyze the general performance of the chain, prometheus ecosystem c
 2. Run the following command: 
 ```
 docker start -i $(docker ps -a -q --filter ancestor=prom/prometheus) || docker run -p 9090:9090 -v <path to prometheus.yml>:/etc/prometheus/prometheus.yml prom/prometheus
+docker run -d -p 3000:3000 grafana/grafana-enterprise
 
 ```
 This will start the prometheus container if you already have it or run it otherwise, if it is the first time you run this command make sure to add the path to prometheus.yaml as indicated.
@@ -97,6 +98,7 @@ This will start the prometheus container if you already have it or run it otherw
     ```
     
 4. Open Grafana and add a new dataSource to look like this:
+
 
 ![dataSource](prometheus/Grafana_dataSource.png)
 

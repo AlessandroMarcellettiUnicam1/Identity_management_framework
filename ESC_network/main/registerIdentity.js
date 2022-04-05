@@ -23,40 +23,24 @@ const argv = yargs
             alias: 'i',
             type: 'string',
         },
-        contractName: {
-            description: 'name of the contract to use',
+        sensorNumber: {
+            description: 'number of sensors to test',
             alias: 'c',
-            type: 'string',
+            type: 'number',
         }}).help().alias('help', 'h').argv; 
         
         
-        /*
-        .command('operation',{
-        operation: {
-            description: 'function to invoke in the contract',
-            alias: 'o',
-            type: 'string',
-        }})
-        .command('contractName',{
-        contractName: {
-            description: 'name of the contract to use',
-            alias: 'c',
-            type: 'string',
-        }})
-        */
-
-async function main(walletName) {
+        
+async function main(walletName, sensorNumber) {
     try {
-        const identity = await takeUserWallet(walletName);
-        await getGatewayChaincode(walletName);
-        await invokeFunction(walletName);
-        
+    	for(let i =1; i<=sensorNumber; i++){
+    	console.log("iteration");
+		const identity = await takeUserWallet(walletName+i);
+		await getGatewayChaincode(walletName+i);
+		await invokeFunction(walletName+i, i);
+        }
 	
- 	//const sensorIdentity = "sensor1:Org1MSP";
-        
-
-	
-	//process.exit();
+ 	
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         process.exit(1);
@@ -97,9 +81,16 @@ async function getGatewayChaincode(walletName, contractName){
 	//console.log('Connected to contract');
 }
 
-async function invokeFunction(walletName){
+async function invokeFunction(walletName, sensorNumber){
 
-        await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor", "", "", "");
+	
+ 	const sensorid = await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor"+sensorNumber, "", "", "");
+        const newSensorid = (sensorid.toString());
+        console.log("Identity created: " + newSensorid);   
+	
+        
+
+        /*await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor", "", "", "");
         //const newSensorid = (sensorid.toString());
         console.log("Identity created");
         
@@ -111,13 +102,22 @@ async function invokeFunction(walletName){
 	console.log(Buffer.from(c1).toString());
 	console.log(`rights assigned to device: ${walletName}`);
 	
-	//const appRights = JSON.parse(Buffer.from(c1).toString());
+	let result1 = await contractIdentity.evaluateTransaction('getSingleIdentity', walletName);
+	console.log(`*** Identity updated with rights: ${Buffer.from(result1).toString()}`);
 	
+	const c2 = await contractRights.submitTransaction('removeRights', walletName, 'ESC_network');
+	//console.log(Buffer.from(c1).toString());
+	console.log(`rights removed to device: ${walletName}`);
+	
+
 	let result3 = await contractIdentity.evaluateTransaction('getSingleIdentity', walletName);
 	console.log(`*** Identity updated with rights: ${Buffer.from(result3).toString()}`);
 	
-        console.log("Process terminated");
-	process.exit();
+        console.log("Process terminated");*/
+        
+        
+        
+	//process.exit();
 	
 	/*let sensorid = await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "", "");
         const newSensorid = (sensorid.toString()).replace('"', '').replace('"', '');
@@ -143,4 +143,4 @@ async function invokeFunction(walletName){
 }
 
 
-main(argv.walletName, argv.contractName);
+main(argv.walletName, argv.sensorNumber);
