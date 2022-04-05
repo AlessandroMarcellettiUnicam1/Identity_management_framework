@@ -10,6 +10,13 @@ const FabricCAServices = require('fabric-ca-client');
 const fs = require('fs');
 const path = require('path');
 
+const argv = yargs
+    .command('numberSensors','blabla',{
+        sensorNumber: {
+            description: 'number of sensors to test',
+            alias: 'n',
+            type: 'number',
+        }}).help().alias('help', 'h').argv; 
 
 async function main(numberSensor) {
 console.log('registering started');
@@ -82,5 +89,5 @@ console.log('registering started');
     }
 }
 
-main(10);
+main(argv.sensorNumber);
 

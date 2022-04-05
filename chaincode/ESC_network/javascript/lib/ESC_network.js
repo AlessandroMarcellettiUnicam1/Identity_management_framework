@@ -325,7 +325,8 @@ class ESC_network extends Contract {
         return this.queryWithQueryString(ctx, queryString);
     
     }
-
+ 
+    //TODO this should be create identity
     async createSensor(ctx, numberSensor) {
         
     
@@ -337,6 +338,7 @@ class ESC_network extends Contract {
         await ctx.stub.putState('SENSOR'+numberSensor, Buffer.from(JSON.stringify(sensor)));
     }
 
+    //TODO add write rights check
     async updateData(ctx, numberSensor, detections, timeData, frequency) {
         let s = await this.querySensor(ctx, parseInt(numberSensor));
         let sensor = JSON.parse(s.toString())[0];
@@ -362,6 +364,7 @@ class ESC_network extends Contract {
     }
 
 
+    //TODO add writing rights check
     async analysis(ctx, streetFlow, timeData, fromDates, numberSensors, frequency) {
         let totalBeginHR = process.hrtime();
         let totalBegin = totalBeginHR[0] * 1000000 + totalBeginHR[1] / 1000;
@@ -457,7 +460,7 @@ class ESC_network extends Contract {
         await ctx.stub.setEvent('FlowEvent', Buffer.from(JSON.stringify(event)));
     }
 
-
+    //TODO add reading rights control
     async evaluateHistory(ctx, timeData, calculateTime, maxCalculateTime, minCalculateTime) {
         
         if(parseInt(calculateTime) >= parseInt(maxCalculateTime)*0.9){
@@ -470,6 +473,7 @@ class ESC_network extends Contract {
     
     }
 
+    //TODO add reading rights control
     async evaluateFrequency(ctx, frequency, calculateTime, maxCalculateTime, minCalculateTime) {
         
         if(parseFloat(calculateTime) >= parseFloat(maxCalculateTime)*0.9){

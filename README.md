@@ -82,10 +82,12 @@ In order to analyze the general performance of the chain, prometheus ecosystem c
 2. Run the following command: 
 ```
 docker start -i $(docker ps -a -q --filter ancestor=prom/prometheus) || docker run -p 9090:9090 -v <path to prometheus.yml>:/etc/prometheus/prometheus.yml prom/prometheus
-docker run -d -p 3000:3000 grafana/grafana-enterprise
 
 ```
 This will start the prometheus container if you already have it or run it otherwise, if it is the first time you run this command make sure to add the path to prometheus.yaml as indicated.
+
+ sudo docker run -p 9090:9090 -v /home/winterschool20/Downloads/identity_management_framework/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+
 
 3. Go to http://localhost:9090/targets and check that Prometheus is up and running, you can observe now how the peer targets are down showing the error "server misbehaving", this is normal behaviour due to prometheus not being yet connected to the blockchain network.
 
@@ -97,9 +99,10 @@ This will start the prometheus container if you already have it or run it otherw
     docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
     ```
     
-4. Open Grafana and add a new dataSource to look like this:
+4. Run and open Grafana and add a new dataSource to look like this:
 
-
+docker run -d -p 3000:3000 grafana/grafana-enterprise
+ 
 ![dataSource](prometheus/Grafana_dataSource.png)
 
 5. Import the Grafana dashboard through the Json file contained within the prometheus folder.

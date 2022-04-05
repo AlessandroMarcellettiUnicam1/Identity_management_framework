@@ -95,7 +95,7 @@ async function main(numberSensor, numberSensors, streetKilometers, minutes, data
         const network = await gateway.getNetwork('mychannel');
 
         // Get the contract from the network.
-        const contract = network.getContract('ESC_network');
+        const contract = network.getContract('ESC_network', 'ESC_network');
 
         let velocities = [];
         let timeStart = [];

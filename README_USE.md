@@ -33,7 +33,7 @@ The parameters of this example are the same used in the graphs shown at the end 
 For each one of those experiments 2 CSV files will be generated in the "results" folder with a timestamp of the execution date and a prefix for each experiment: "testNoElastic", "testFrequency" and "testTimeWindow". the three experiment test the system without any elasticity, with the frequency of update of sensors as elasticity parameter and the time window for the data to be stored as elasticity parameter, respectively.
 Wait for the network to start up and run the experiments! Once it is finished it will shut down itself. The estimated duration of these experiments is between three and three and a half hours. The results will be written in a series of .csv files inside ``elastic-smart-contracts/ESC-network/main/results``.
 
-The simlated sensor data for the experiment can be configured in the file [defaultData.csv](https://github.com/isa-group/elastic-smart-contracts/blob/master/ESC_network/main/defaultData.csv); in the current scenario, each row represent the speed and relative arrival time for each car.  
+The simulated sensor data for the experiment can be configured in the file [defaultData.csv](https://github.com/isa-group/elastic-smart-contracts/blob/master/ESC_network/main/defaultData.csv); in the current scenario, each row represent the speed and relative arrival time for each car.  
 
 # Results interpretation
 
@@ -71,7 +71,7 @@ Two .csv files will be generated for each experiments, one containing the analyt
 
 - **CARS_PER_SECOND_TOTAL**: flow of cars calculated for the whole street.
 
-- **REAL_CARS_PER_SECOND**: real flow of cars having into consideration the data straight from the csv of cars used to simulate the flow, this flow is for the   inmediate time of the calculation.
+- **REAL_CARS_PER_SECOND**: real flow of cars having into consideration the data straight from the csv of cars used to simulate the flow, this flow is for the immediate time of the calculation.
 
 - **REAL_CARS_PER_SECOND_TOTAL**: real flow of cars having into consideration the data straight from the csv of cars used to simulate the flow, the difference between this column and the previous one is that this one takes the flow for the entire time window given, instead of the inmediate time alone.
 
