@@ -18,7 +18,7 @@ elif [ "$NETWORK" == "deploy" ] ; then
 ./startFabric.sh javascript "false" ${CCNAME}
 
 fi
-./launchTests.sh $1  $2 $3 $i $5  $6 $7
+#./launchTests.sh $1  $2 $3 $i $5  $6 $7
 #docker network connect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
 #cd main
 #sleep 1

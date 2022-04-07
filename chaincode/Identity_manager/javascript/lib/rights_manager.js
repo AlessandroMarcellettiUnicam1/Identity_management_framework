@@ -7,13 +7,6 @@
 const { Contract } = require('fabric-contract-api');
 const IdentityManager = require('./identity_manager.js');
 
-/*class rights_managerContext extends Context {
-    constructor () {
-        super();
-        this.identityManager = new IdentityManager(this);
-    }
-}*/
-
 class rights_manager extends Contract {
 
 
@@ -22,9 +15,6 @@ class rights_manager extends Contract {
         super('rights_manager');
    }
    
-   /*createContext() {
-    return new rights_managerContext();
-   }*/
    
    
    /* Function for assigning rights to an identity
@@ -89,7 +79,6 @@ class rights_manager extends Contract {
     
     async removeRights(ctx, identityName, appId){
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    //TODO REMOVE RIGHTS BASED ON APPLICATION
     const identity = await ctx.stub.getState(id);  
     const jsonIdentity = JSON.parse(identity.toString());
     
@@ -108,8 +97,6 @@ class rights_manager extends Contract {
     	}
     }
     
-    
-
     await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
     return jsonIdentity.toString();
     }

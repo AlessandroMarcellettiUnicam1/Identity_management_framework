@@ -1,0 +1,28 @@
+{
+  "name": "identity_management_framework",
+  "version": "1.0.0",
+  "description": "## Requirements This guide has been developed in Ubuntu 18.04. It is recommended to update the system packages before starting the installation procedure (with: ```sudo apt update```)",
+  "main": "index.js",
+  "dependencies": {
+    "@hyperledger/caliper-cli": "^0.4.2",
+    "fabric-ca-client": "^2.2.3",
+    "fabric-client": "^1.4.14",
+    "fabric-network": "^2.2.3",
+    "fabric-protos": "^2.0.0-snapshot.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlessandroMarcellettiUnicam1/Identity_management_framework.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlessandroMarcellettiUnicam1/Identity_management_framework/issues"
+  },
+  "homepage": "https://github.com/AlessandroMarcellettiUnicam1/Identity_management_framework#readme"
+}

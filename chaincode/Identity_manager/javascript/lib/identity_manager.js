@@ -52,16 +52,39 @@ class identity_manager extends Contract {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
     const identity = await ctx.stub.getState(identityName);
     
-    if(identity.State == "DISMISSED"){
-    	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
-    }
-
      const jsonRights = JSON.parse(r.toString());
      const jsonIdentity = JSON.parse(identity.toString());
      
-     jsonIdentity.rights = jsonRights;
+     if(jsonIdentity.State == "DISMISSED"){
+    	throw new Error(`ERROR: the identity is already dismissed`);
+    }
+    
+     jsonIdentity.Rights = jsonRights;
      
      await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+     
+    }
+    
+    /* Function for updating optional parameters of an identity
+    * If the identity is still ACTIVE, the optional information in JSON format will be updated accrding to the inputs
+    * It will automatically select the identity corresponding to the caller one
+    */
+    async updateIdentity(ctx, identityName, endpoint, uri, coord){
+
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    const identity = await ctx.stub.getState(identityName);
+
+    const jsonIdentity = JSON.parse(identity.toString());
+     
+    if(jsonIdentity.State == "DISMISSED"){
+    	throw new Error(`ERROR: the identity is already dismissed`);
+    }
+    
+    jsonIdentity.Opt_info.Endpoint = endpoint
+    jsonIdentity.Opt_info.URI = uri
+    jsonIdentity.Opt_info.Coordinates = coord
+     
+    await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
      
     }
     
@@ -71,13 +94,21 @@ class identity_manager extends Contract {
     */
     async dismissIdentity(ctx, identityName){
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(identity.State == "DISMISSED"){
-    	throw new Error(`ERROR: the identity is already dismissed`);
-    }
+    
      const identity = await ctx.stub.getState(id);
      let jsonIdentity = JSON.parse(identity.toString());
+     if(jsonIdentity.State == "DISMISSED"){
+    	throw new Error(`ERROR: the identity is already dismissed`);
+    }
      jsonIdentity.State = "DISMISSED";
      await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+     
+    }
+   
+    async deleteIdentity(ctx, identityName){
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    
+    await ctx.stub.deleteState(id.toString());
      
     }
     

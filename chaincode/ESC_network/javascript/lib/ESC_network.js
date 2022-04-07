@@ -6,131 +6,21 @@
 
 const { Contract } = require('fabric-contract-api');
 const appRights = {
-        	ID: "ESC_network",
-        	AllowedOrgs: [{
-        		MSPName: 'Org1MSP',
-        		AllowedOp: [{
-        			Type: 'LightSensor', 
-        			Op: 'WRITE'}]
-        		}]
-        };
+   ID: "ESC_network",
+   AllowedOrgs: [{
+      MSPName: 'Org1MSP',
+      AllowedOp: [{Type: 'WriteSensor', Op: 'WRITE'}, {Type: 'ReadSensor', Op: 'READ'}]
+   }]
+};
+        
+        
 class ESC_network extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Application Rights ===========');
         
         
-        /*const detections = [
-            {
-                streetId: 1,
-                detectionDateTime: 1588698495684,
-                detectionKilometer: 1,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'ASCENDENT',
-                
-            },
-            {
-                streetId: 1,
-                detectionDateTime: 1588698494684,
-                detectionKilometer: 2,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'DESCENDENT',
-                
-            },
-            {
-                streetId: 1,
-                detectionDateTime: 1588698493684,
-                detectionKilometer: 2,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'ASCENDENT',
-                
-            },
-            {
-                streetId: 1,
-                detectionDateTime: 1588698492684,
-                detectionKilometer: 3,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'ASCENDENT',
-                
-            },
-            {
-                streetId: 1,
-                detectionDateTime: 1588698491684,
-                detectionKilometer: 4,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'DESCENDENT',
-                
-            },
-            {
-                streetId: 1,
-                detectionDateTime: 1588698490684,
-                detectionKilometer: 4,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'ASCENDENT',
-                
-            },
-            {
-                streetId: 2,
-                detectionDateTime: 1588698489684,
-                detectionKilometer: 1,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'ASCENDENT',
-                
-            },
-            {
-                streetId: 2,
-                detectionDateTime: 1588698488684,
-                detectionKilometer: 1,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'DESCENDENT',
-                
-            },
-            {
-                streetId: 2,
-                detectionDateTime: 1588698487684,
-                detectionKilometer: 6,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'ASCENDENT',
-                
-            },
-            {
-                streetId: 2,
-                detectionDateTime: 1588698486684,
-                detectionKilometer: 3,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'DESCENDENT',
-                
-            },
-            {
-                streetId: 2,
-                detectionDateTime: 1588698485684,
-                detectionKilometer: 7,
-                detectionLatitude: -5.930535,
-                detectionLongitude: 37.342912,
-                direction: 'ASCENDENT',
-                
-            },
-        ];
-
-        let indexName = 'street~kilometer'
-
-
-
-        for (let i = 0; i < detections.length; i++) {
-            detections[i].docType = 'detection';
-            await ctx.stub.putState('DETECTION' + i, Buffer.from(JSON.stringify(detections[i])));
-            console.info('Added <--> ', detections[i]);
-        }*/
+        
         console.info('============= END : Initialize Ledger ===========');
     }
 
@@ -142,13 +32,38 @@ class ESC_network extends Contract {
         
     }
     
+    async checkRights(identityName, operation){
+    	const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    	
+        const deviceIdentityRaw = await ctx.stub.invokeChaincode('Identity_manager', ['getSingleIdentity', id], 'mychannel');
+        const deviceIdentity = JSON.parse(Buffer.from(deviceIdentityRaw.payload).toString('utf8'));
+        
+        const rights = deviceIdentity.Rights;
+        
+        for (let i = 0; i < rights.length; i++) {
+        	if(rights[i].AppName == 'ESC_network' && rights[i].AllowedOp.includes(operation)){
+        		return true;        	
+        	}
+        }
+        
+        return false;
+
+    }
+    
+    
+    
     async getRightsForApp(ctx, requestedApp){
     	const rights = await ctx.stub.getState(requestedApp);
     	return rights.toString();
     }
     
     
-    async queryAllDetections(ctx) {
+    async queryAllDetections(ctx, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
+    
         const startKey = 'DETECTION0';
         const endKey = 'DETECTION99999999999999999';
         const allResults = [];
@@ -166,7 +81,12 @@ class ESC_network extends Contract {
         console.info(allResults);
         return JSON.stringify(allResults);
     }
-    async queryAllFlows(ctx) {
+    
+    async queryAllFlows(ctx, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         const startKey = 'CARFLOW0';
         const endKey = 'CARFLOW9999999999999999';
         const allResults = [];
@@ -185,7 +105,11 @@ class ESC_network extends Contract {
         return JSON.stringify(allResults);
     }
 
-    async queryAllSensorsInRange(ctx, numberSensors) {
+    async queryAllSensorsInRange(ctx, numberSensors, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         const startKey = 'SENSOR1';
         const endKey = 'SENSOR'+(parseInt(numberSensors)+1);
         const allResults = [];
@@ -204,7 +128,11 @@ class ESC_network extends Contract {
         return JSON.stringify(allResults);
     }
 
-    async createDetection(ctx, numberSensor, detectionNumber, sensorKilometer, direction, numberCars) {
+    async createDetection(ctx, numberSensor, detectionNumber, sensorKilometer, direction, numberCars, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'WRITE') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         let detectionDateTime = Date.now();
         let sensor = parseInt(numberSensor)
         const detection = {
@@ -226,7 +154,11 @@ class ESC_network extends Contract {
         await ctx.stub.putState(detectionNumber, Buffer.from(JSON.stringify(detection)));
     }
     
-    async calculateFlow(ctx, calculationNumber, streetId, fromDate, numberSensors) {
+    async calculateFlow(ctx, calculationNumber, streetId, fromDate, numberSensors, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'WRITE') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         let totalBeginHR = process.hrtime();
         let totalBegin = totalBeginHR[0] * 1000000 + totalBeginHR[1] / 1000;
         let toDate = Date.now();
@@ -236,7 +168,7 @@ class ESC_network extends Contract {
         let totalDetections = 0;
         let total = 0;
         for(let j=1; j<=numberSensors; j++){
-            res.push(await this.queryCalculate(ctx, fromDate, toDate, j));
+            res.push(await this.queryCalculate(ctx, fromDate, toDate, j, identityName));
             let detections = await JSON.parse(res[j-1].toString());
             let numberCars = 0;
             for(let i=0; i< detections.length; i++){
@@ -278,8 +210,11 @@ class ESC_network extends Contract {
         await ctx.stub.setEvent('FlowEvent', Buffer.from(JSON.stringify(event)));
     }
     
-    async queryDetectionsInRange(ctx,startDate, endDate) {
-    
+    async queryDetectionsInRange(ctx,startDate, endDate, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         const allResults = [];
         for await (const {key, value} of ctx.stub.getStateByRange(startDate, endDate)) {
             const strValue = Buffer.from(value).toString('utf8');
@@ -297,7 +232,10 @@ class ESC_network extends Contract {
     }
     
     async queryCalculate(ctx, fromDate, toDate, numberSensor) {
-    
+    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }*/
         let queryString = `{
             "selector": {
                 "sensor": {
@@ -314,7 +252,10 @@ class ESC_network extends Contract {
     }
 
     async querySensor(ctx, numberSensor) {
-    
+    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }*/
         let queryString = `{
             "selector": {
                 "numberSensor": {
@@ -326,7 +267,7 @@ class ESC_network extends Contract {
     
     }
  
-    //TODO this should be create identity
+    //this should be create identity
     async createSensor(ctx, numberSensor) {
         
     
@@ -338,8 +279,12 @@ class ESC_network extends Contract {
         await ctx.stub.putState('SENSOR'+numberSensor, Buffer.from(JSON.stringify(sensor)));
     }
 
-    //TODO add write rights check
-    async updateData(ctx, numberSensor, detections, timeData, frequency) {
+    //Write rights check
+    async updateData(ctx, numberSensor, detections, timeData, frequency, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'WRITE') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         let s = await this.querySensor(ctx, parseInt(numberSensor));
         let sensor = JSON.parse(s.toString())[0];
         let det = JSON.parse(detections);
@@ -364,8 +309,12 @@ class ESC_network extends Contract {
     }
 
 
-    //TODO add writing rights check
-    async analysis(ctx, streetFlow, timeData, fromDates, numberSensors, frequency) {
+    //Writing rights check
+    async analysis(ctx, streetFlow, timeData, fromDates, numberSensors, frequency, identityName) {
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'WRITE') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         let totalBeginHR = process.hrtime();
         let totalBegin = totalBeginHR[0] * 1000000 + totalBeginHR[1] / 1000;
 
@@ -460,9 +409,12 @@ class ESC_network extends Contract {
         await ctx.stub.setEvent('FlowEvent', Buffer.from(JSON.stringify(event)));
     }
 
-    //TODO add reading rights control
-    async evaluateHistory(ctx, timeData, calculateTime, maxCalculateTime, minCalculateTime) {
-        
+    //Reading rights control
+    async evaluateHistory(ctx, timeData, calculateTime, maxCalculateTime, minCalculateTime, identityName) {
+        const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         if(parseInt(calculateTime) >= parseInt(maxCalculateTime)*0.9){
             return JSON.parse(parseInt(timeData)*0.75);
         }else if(parseInt(calculateTime) <= parseInt(minCalculateTime)*1.1){
@@ -473,9 +425,12 @@ class ESC_network extends Contract {
     
     }
 
-    //TODO add reading rights control
-    async evaluateFrequency(ctx, frequency, calculateTime, maxCalculateTime, minCalculateTime) {
-        
+    //Reading rights control
+    async evaluateFrequency(ctx, frequency, calculateTime, maxCalculateTime, minCalculateTime, identityName) {
+        const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
         if(parseFloat(calculateTime) >= parseFloat(maxCalculateTime)*0.9){
             return JSON.parse(parseFloat(frequency)*1.25);
         }else if(parseFloat(calculateTime) <= parseFloat(minCalculateTime)*1.1){
@@ -487,6 +442,10 @@ class ESC_network extends Contract {
     }
 
     async querySensor2(ctx, numberSensor) {
+    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }*/
         let res = await this.querySensor(ctx, numberSensor);
 
         return JSON.parse(res.toString())[0].Record.detections;
@@ -494,7 +453,10 @@ class ESC_network extends Contract {
     }
 
     async queryStreetFlows(ctx, streetId) {
-    
+    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }*/
         let queryString = `{
             "selector": {
                 "streetId": {
@@ -502,12 +464,15 @@ class ESC_network extends Contract {
                 }
             }
         }`;
-        return this.queryWithQueryString(ctx, queryString);
+        return this.queryWithQueryString(ctx, queryString, identityName);
     
     }
 
-    async createStreetFlows(ctx, streetId) {
-        
+    async createStreetFlows(ctx, streetId, identityName) {
+        const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'WRITE') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }
     
         const streetflows = {
             streetId: parseInt(streetId),
@@ -518,7 +483,10 @@ class ESC_network extends Contract {
     }
         
     async queryWithQueryString(ctx, queryString) {
-    
+    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
+    if(checkRights(id, 'READ') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }*/
         console.log('query String');
         console.log(JSON.stringify(queryString));
     

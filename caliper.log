@@ -1,0 +1,83 @@
+2022.04.06-16:59:43.480[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.06-16:59:43.675[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.06-16:59:43.682[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2022.04.06-16:59:43.682[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.06-16:59:43.682[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2022.04.06-17:04:32.471[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.06-17:04:32.658[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.06-17:04:32.659[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2022.04.06-17:04:32.659[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.06-17:04:32.660[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2022.04.06-17:07:33.807[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.06-17:07:33.981[32m info [39m [caliper] [cli-launch-manager] 	Set workspace path: /home/winterschool20/Downloads/identity_management_framework
+2022.04.06-17:07:33.982[32m info [39m [caliper] [cli-launch-manager] 	Set benchmark configuration path: /home/winterschool20/Downloads/identity_management_framework/benchmarks/myAssetBenchmark.yaml
+2022.04.06-17:07:33.982[32m info [39m [caliper] [cli-launch-manager] 	Set network configuration path: /home/winterschool20/Downloads/identity_management_framework/networks/networkConfig.yaml
+2022.04.06-17:07:33.983[32m info [39m [caliper] [cli-launch-manager] 	Set SUT type: fabric
+2022.04.06-17:07:34.065[32m info [39m [caliper] [benchmark-validator] 	No observer specified, will default to `none`
+2022.04.06-17:07:34.067[32m info [39m [caliper] [caliper-engine] 	Starting benchmark flow
+2022.04.06-17:07:34.795[32m info [39m [caliper] [fabric-connector] 	Initializing gateway connector compatible with installed SDK: 2.2.3
+2022.04.06-17:07:34.925[31m error[39m [caliper] [cli-launch-manager] 	Unexpected error during benchmark execution: Error: EACCES: permission denied, stat '/home/winterschool20/Downloads/identity_management_framework/base-network/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/cert.pem'
+2022.04.06-17:13:32.586[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.06-17:13:32.805[32m info [39m [caliper] [cli-launch-manager] 	Set workspace path: /home/winterschool20/Downloads/identity_management_framework
+2022.04.06-17:13:32.807[32m info [39m [caliper] [cli-launch-manager] 	Set benchmark configuration path: /home/winterschool20/Downloads/identity_management_framework/benchmarks/myAssetBenchmark.yaml
+2022.04.06-17:13:32.808[32m info [39m [caliper] [cli-launch-manager] 	Set network configuration path: /home/winterschool20/Downloads/identity_management_framework/networks/networkConfig.yaml
+2022.04.06-17:13:32.808[32m info [39m [caliper] [cli-launch-manager] 	Set SUT type: fabric
+2022.04.06-17:13:32.865[32m info [39m [caliper] [benchmark-validator] 	No observer specified, will default to `none`
+2022.04.06-17:13:32.866[32m info [39m [caliper] [caliper-engine] 	Starting benchmark flow
+2022.04.06-17:13:33.750[32m info [39m [caliper] [fabric-connector] 	Initializing gateway connector compatible with installed SDK: 2.2.3
+2022.04.06-17:13:33.814[31m error[39m [caliper] [cli-launch-manager] 	Unexpected error during benchmark execution: Error: path property does not point to a file that exists for clientPrivateKey for name User1 in organization Org1MSP
+2022.04.06-17:30:57.532[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.06-17:30:57.692[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.06-17:30:57.693[32m info [39m [caliper] [bind] 	Binding for fabric@1.4. This might take some time...
+2022.04.06-17:30:57.694[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.06-17:30:57.694[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-client@1.4.14 fabric-protos@2.0.0-snapshot.1 fabric-network@1.4.14
+2022.04.06-17:31:40.063[31m error[39m [caliper] [bind] 	Failed to execute "npm" with return code 1.
+2022.04.06-17:32:23.821[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.06-17:32:24.039[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.06-17:32:24.040[32m info [39m [caliper] [bind] 	Binding for fabric@1.4. This might take some time...
+2022.04.06-17:32:24.041[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.06-17:32:24.041[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-client@1.4.14 fabric-protos@2.0.0-snapshot.1 fabric-network@1.4.14
+2022.04.06-17:34:41.139[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.06-17:34:41.367[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.06-17:34:41.369[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2022.04.06-17:34:41.369[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.06-17:34:41.370[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2022.04.07-09:51:24.991[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.07-09:51:25.193[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.07-09:51:25.194[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2022.04.07-09:51:25.194[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.07-09:51:25.194[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2022.04.07-09:51:33.714[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.07-09:51:33.851[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.07-09:51:33.852[32m info [39m [caliper] [bind] 	Binding for fabric@1.4. This might take some time...
+2022.04.07-09:51:33.852[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.07-09:51:33.852[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-client@1.4.14 fabric-protos@2.0.0-snapshot.1 fabric-network@1.4.14
+2022.04.07-09:51:41.032[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.07-09:51:41.183[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.07-09:51:41.186[32m info [39m [caliper] [bind] 	Binding for fabric@1.4. This might take some time...
+2022.04.07-09:51:41.186[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.07-09:51:41.187[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-client@1.4.14 fabric-protos@2.0.0-snapshot.1 fabric-network@1.4.14
+2022.04.07-09:53:29.953[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.07-09:53:30.108[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.07-09:53:30.109[32m info [39m [caliper] [bind] 	Binding for fabric@1.4. This might take some time...
+2022.04.07-09:53:30.110[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.07-09:53:30.110[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-client@1.4.14 fabric-protos@2.0.0-snapshot.1 fabric-network@1.4.14
+2022.04.07-09:58:16.864[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.07-09:58:17.014[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.07-09:58:17.015[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2022.04.07-09:58:17.015[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.07-09:58:17.015[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2022.04.07-10:14:48.635[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.07-10:14:48.784[33m warn [39m [caliper] [bind] 	Working directory not specified. Using "/home/winterschool20/Downloads/identity_management_framework"
+2022.04.07-10:14:48.785[32m info [39m [caliper] [bind] 	Binding for fabric@2.2. This might take some time...
+2022.04.07-10:14:48.786[32m info [39m [caliper] [bind] 	Using working directory: /home/winterschool20/Downloads/identity_management_framework
+2022.04.07-10:14:48.786[32m info [39m [caliper] [bind] 	Calling npm with: install fabric-network@2.2.3 fabric-ca-client@2.2.3
+2022.04.07-10:17:34.937[90m debug[39m [caliper] [rateControl.js] 	Constructed a winston logger with the specified settings
+2022.04.07-10:17:35.087[32m info [39m [caliper] [cli-launch-manager] 	Set workspace path: /home/winterschool20/Downloads/identity_management_framework
+2022.04.07-10:17:35.088[32m info [39m [caliper] [cli-launch-manager] 	Set benchmark configuration path: /home/winterschool20/Downloads/identity_management_framework/benchmarks/myAssetBenchmark.yaml
+2022.04.07-10:17:35.089[32m info [39m [caliper] [cli-launch-manager] 	Set network configuration path: /home/winterschool20/Downloads/identity_management_framework/networks/networkConfig.yaml
+2022.04.07-10:17:35.090[32m info [39m [caliper] [cli-launch-manager] 	Set SUT type: fabric
+2022.04.07-10:17:35.124[32m info [39m [caliper] [benchmark-validator] 	No observer specified, will default to `none`
+2022.04.07-10:17:35.128[32m info [39m [caliper] [caliper-engine] 	Starting benchmark flow
+2022.04.07-10:17:35.939[32m info [39m [caliper] [fabric-connector] 	Initializing gateway connector compatible with installed SDK: 2.2.3
+2022.04.07-10:17:35.956[31m error[39m [caliper] [cli-launch-manager] 	Unexpected error during benchmark execution: Error: path property does not point to a file that exists for clientPrivateKey for name User1 in organization Org1MSP
