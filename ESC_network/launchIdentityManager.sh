@@ -5,11 +5,13 @@ docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prom
 NETWORK=$8
 CCNAME='Identity_manager'
 CCNAME2='ESC_network'
+CCNAME3='testBenchmark'
 
 if [ "$NETWORK" == "up" ] ; then
  ./networkDown.sh
  ./startFabric.sh javascript "false" ${CCNAME}
  ./startFabric.sh javascript "true" ${CCNAME2}
+ ./startFabric.sh javascript "true" ${CCNAME3}
 
 elif [ "$NETWORK" == "down" ] ; then
  ./networkDown.sh

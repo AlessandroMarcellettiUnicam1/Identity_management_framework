@@ -1,0 +1,29 @@
+test:
+    name: basic-contract-benchmark
+    description: test benchmark
+    workers:
+      type: local
+      number: 2
+    rounds:
+      - label: createIdentity
+        description: create identity benchmark
+        txNumber: 1
+        rateControl:
+          type: fixed-rate
+          opts:
+            tps: 1
+        workload:
+          module: workload/createIdentity.js
+          arguments:
+            contractId: Identity_manager
+      - label: createRights
+        description: create rights benchmark
+        txNumber: 1
+        rateControl:
+          type: fixed-rate
+          opts:
+            tps: 1
+        workload:
+          module: workload/createRights.js
+          arguments:
+            contractId: testBenchmark

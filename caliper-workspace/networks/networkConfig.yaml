@@ -1,0 +1,27 @@
+name: Calier test
+version: "2.0.0"
+
+caliper:
+  blockchain: fabric
+
+channels:
+  - channelName: mychannel
+    contracts:
+    - id: Identity_manager
+    - id: ESC_network
+    - id: testBenchmark
+
+organizations:
+  - mspid: Org1MSP
+    identities:
+      certificates:
+      - name: 'Admin'
+        clientPrivateKey:
+          path: '/home/winterschool/Desktop/Identity_management_framework/base-network/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/7b7ecdc0b992ffcca576a88eb883ce5736b9166117c99892bada78dbcd6b22f1_sk'
+        clientSignedCert:
+          path: '/home/winterschool/Desktop/Identity_management_framework/base-network/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem'
+    connectionProfile:
+      path: '/home/winterschool/Desktop/Identity_management_framework/base-network/organizations/peerOrganizations/org1.example.com/connection-org1.yaml'
+      discover: true
+
+
