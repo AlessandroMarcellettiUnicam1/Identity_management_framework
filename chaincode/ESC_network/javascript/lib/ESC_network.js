@@ -32,12 +32,12 @@ class ESC_network extends Contract {
         
     }
     
-    async checkRights(identityName, operation){
+    async checkRights(ctx, identityName, operation){
     	const id = identityName + ':' + ctx.stub.getCreator().mspid;
     	
         const deviceIdentityRaw = await ctx.stub.invokeChaincode('Identity_manager', ['getSingleIdentity', id], 'mychannel');
         const deviceIdentity = JSON.parse(Buffer.from(deviceIdentityRaw.payload).toString('utf8'));
-        
+       
         const rights = deviceIdentity.Rights;
         
         for (let i = 0; i < rights.length; i++) {

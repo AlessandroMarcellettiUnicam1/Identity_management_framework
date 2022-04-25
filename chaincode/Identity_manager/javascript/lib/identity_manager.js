@@ -21,7 +21,7 @@ class identity_manager extends Contract {
     */
     async provideIdentity(ctx, identityName, type, endpoint, uri, coord){
 	     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-	     //const id = ctx.clientIdentity.getID();
+
 	    	const identity = {
 		    ID: id,
 		    State: "ACTIVE",
@@ -36,7 +36,7 @@ class identity_manager extends Contract {
 		    	AllowedOp: ''
 		    }]
 		};
-	    
+	      ctx.stub.setEvent('identityCreation', Buffer.from(JSON.stringify(identity)));
 	      await ctx.stub.putState(id, Buffer.from(JSON.stringify(identity)));
 	      return JSON.stringify(id);
       
@@ -61,6 +61,8 @@ class identity_manager extends Contract {
     
      jsonIdentity.Rights = jsonRights;
      
+     ctx.stub.setEvent('identityRightsUpdate', Buffer.from(JSON.stringify(jsonIdentity)));
+     
      await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
      
     }
@@ -71,20 +73,23 @@ class identity_manager extends Contract {
     */
     async updateIdentity(ctx, identityName, endpoint, uri, coord){
 
-    const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    const identity = await ctx.stub.getState(identityName);
+	    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+	    
+	    const identity = await ctx.stub.getState(identityName);
 
-    const jsonIdentity = JSON.parse(identity.toString());
-     
-    if(jsonIdentity.State == "DISMISSED"){
-    	throw new Error(`ERROR: the identity is already dismissed`);
-    }
-    
-    jsonIdentity.Opt_info.Endpoint = endpoint
-    jsonIdentity.Opt_info.URI = uri
-    jsonIdentity.Opt_info.Coordinates = coord
-     
-    await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+	    const jsonIdentity = JSON.parse(identity.toString());
+	     
+	    if(jsonIdentity.State == "DISMISSED"){
+	    	throw new Error(`ERROR: the identity is already dismissed`);
+	    }
+	    
+	    jsonIdentity.Opt_info.Endpoint = endpoint
+	    jsonIdentity.Opt_info.URI = uri
+	    jsonIdentity.Opt_info.Coordinates = coord
+	     
+	    ctx.stub.setEvent('identityUpdate', Buffer.from(JSON.stringify(jsonIdentity)));
+	    
+	    await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
      
     }
     
@@ -93,22 +98,25 @@ class identity_manager extends Contract {
     * It will automatically select the identity corresponding to the caller one 
     */
     async dismissIdentity(ctx, identityName){
-    const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    
-     const identity = await ctx.stub.getState(id);
-     let jsonIdentity = JSON.parse(identity.toString());
-     if(jsonIdentity.State == "DISMISSED"){
-    	throw new Error(`ERROR: the identity is already dismissed`);
-    }
-     jsonIdentity.State = "DISMISSED";
-     await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+	    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+	    
+	     const identity = await ctx.stub.getState(id);
+	     let jsonIdentity = JSON.parse(identity.toString());
+	     if(jsonIdentity.State == "DISMISSED"){
+	    	throw new Error(`ERROR: the identity is already dismissed`);
+	    }
+	     jsonIdentity.State = "DISMISSED";
+	     ctx.stub.setEvent('identityDismissed', Buffer.from(JSON.stringify(jsonIdentity)));
+	     await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
      
     }
    
     async deleteIdentity(ctx, identityName){
-    const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    
-    await ctx.stub.deleteState(id.toString());
+	    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+	    
+	    ctx.stub.setEvent('identityDismissed', Buffer.from(JSON.stringify(jsonIdentity)));
+	    
+	    await ctx.stub.deleteState(id.toString());
      
     }
     

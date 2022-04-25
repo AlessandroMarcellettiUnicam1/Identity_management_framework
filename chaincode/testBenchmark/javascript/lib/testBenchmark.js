@@ -52,13 +52,26 @@ class testBenchmark extends Contract {
    }]
 };
 
-    const identity = await ctx.stub.getState(id);
+    const jsonIdentity = {
+		    ID: id,
+		    State: "ACTIVE",
+		    Type: '', 
+		    Opt_info: {
+		    	Endopint: '',
+		    	URI: '',
+		    	Coordinates: ''
+		    },
+		    Rights: [{
+		    	AppName: '',
+		    	AllowedOp: ''
+		    }]
+		};
     
-    if(identity.State == "DISMISSED"){
+    if(jsonIdentity.State == "DISMISSED"){
     	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
     }
 
-    const jsonIdentity = JSON.parse(identity.toString());
+    //const jsonIdentity = JSON.parse(identity.toString());
     
     for (let i = 0; i < appRights.AllowedOrgs.length; i++) {
     	if(appRights.AllowedOrgs[i].MSPName == ctx.stub.getCreator().mspid){
@@ -101,8 +114,20 @@ class testBenchmark extends Contract {
     
     async removeRights(ctx, identityName, appId){
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    const identity = await ctx.stub.getState(id);  
-    const jsonIdentity = JSON.parse(identity.toString());
+    const jsonIdentity = {
+		    ID: id,
+		    State: "ACTIVE",
+		    Type: 'ReadSensor', 
+		    Opt_info: {
+		    	Endopint: '',
+		    	URI: '',
+		    	Coordinates: ''
+		    },
+		    Rights: [{
+		    	AppName: 'ESC_network',
+		    	AllowedOp: 'READ'
+		    }]
+		};
     
     if(jsonIdentity.State == "DISMISSED"){
     	throw new Error(`ERROR: you cannot removed rights to a dismissed identity`);
@@ -121,6 +146,45 @@ class testBenchmark extends Contract {
     
     await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
     return jsonIdentity.toString();
+    }
+    
+    
+    async updateRights(ctx, identityName, requestedApp){
+    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+      const jsonIdentity = {
+		    ID: id,
+		    State: "ACTIVE",
+		    Type: '', 
+		    Opt_info: {
+		    	Endopint: '',
+		    	URI: '',
+		    	Coordinates: ''
+		    },
+		    Rights: [{
+		    	AppName: 'ESC_network',
+		    	AllowedOp: 'oldRight'
+		    }]
+		};
+		
+     if(jsonIdentity.State == "DISMISSED"){
+    	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
+     }
+     
+      for (let i = 0; i < jsonIdentity.Rights.length; i++) {
+    	if(jsonIdentity.Rights[i].AppName == requestedApp){
+    	   const newRight = {
+		    	AppName: requestedApp,
+		    	AllowedOp: 'newRight'
+		    };
+	   jsonIdentity.Rights[i] = newRight;
+    	
+    	}
+      }
+      
+      await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+    return jsonIdentity.toString();
+      
+    
     }
     
     

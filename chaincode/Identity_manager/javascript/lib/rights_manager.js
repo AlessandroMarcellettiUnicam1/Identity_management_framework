@@ -32,11 +32,13 @@ class rights_manager extends Contract {
 
     const identity = await ctx.stub.getState(id);
     
-    if(identity.State == "DISMISSED"){
-    	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
-    }
+   
 
     const jsonIdentity = JSON.parse(identity.toString());
+    
+    if(jsonIdentity.State == "DISMISSED"){
+    	throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
+    }
     
     for (let i = 0; i < appRights.AllowedOrgs.length; i++) {
     	if(appRights.AllowedOrgs[i].MSPName == ctx.stub.getCreator().mspid){
@@ -54,7 +56,7 @@ class rights_manager extends Contract {
 				    //AppName.push(appRights.ID);
 				    //jsonIdentity.Rights.AllowedOp.push(appRights.AllowedOrgs.AllowedOp[t].Op);
 				    
-				    
+				    ctx.stub.setEvent('rightsCreation', Buffer.from(JSON.stringify(jsonIdentity)));
 				    await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
 				    return jsonIdentity.toString();
     			}
@@ -62,43 +64,75 @@ class rights_manager extends Contract {
     	}
     }
     
+    ctx.stub.setEvent('rightsCreation', Buffer.from(JSON.stringify(jsonIdentity)));
+    
     return "No identity can be found for this ID";
     
     }
     
-    //TODO maybe useless, has the same functionalities of the assign
-    /*async updateRights(ctx, identityName){
-    const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    //TODO CREATE RIGHTS BASED ON APPLICATION
-    let identityClass = new Identity();
-    identityClass.updateIdentityRights(id);
+    async updateRights(ctx, identityName, requestedApp){
+       const org = ctx.stub.getCreator().mspid;
+       
+       const applicationRightsRaw = await ctx.stub.invokeChaincode(requestedApp, ['getRightsForApp', requestedApp], 'mychannel');
+       const appRights = JSON.parse(Buffer.from(applicationRightsRaw.payload).toString('utf8'));
     
-    return JSON.stringify(id);
-    }*/
+       const id = identityName + ':' + org;
+       const identity = await ctx.stub.getState(id);
+       const jsonIdentity = JSON.parse(identity.toString());
+        
+     	if(jsonIdentity.State == "DISMISSED"){
+    		throw new Error(`ERROR: you cannot assign rights to a dismissed identity`);
+     	}
+     
+      	for (let i = 0; i < jsonIdentity.Rights.length; i++) {
+      		if(jsonIdentity.Rights[i].AppName == requestedApp){
+      		
+      			for (let z = 0; z < appRights.AllowedOrgs.length; z++) {
+    				if(appRights.AllowedOrgs[z].MSPName == org){
+    				
+		      			for (let t = 0; t < appRights.AllowedOrgs[z].AllowedOp.length; t++) {
+				    		if(appRights.AllowedOrgs[z].AllowedOp[t].Type == jsonIdentity.Type){
+				    	   		
+					   		jsonIdentity.Rights[i] = appRights.AllowedOrgs[z].AllowedOp[t];
+				    	
+				    		}
+		   	   		}
+   	   			}
+   	   		}
+   	   	}
+   	   }
+   	   
+   	ctx.stub.setEvent('rightsUpdate', Buffer.from(JSON.stringify(jsonIdentity)));
+      
+        await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+    	return jsonIdentity.toString();
+      
+    }
     
     
     async removeRights(ctx, identityName, appId){
-    const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    const identity = await ctx.stub.getState(id);  
-    const jsonIdentity = JSON.parse(identity.toString());
-    
-    if(jsonIdentity.State == "DISMISSED"){
-    	throw new Error(`ERROR: you cannot removed rights to a dismissed identity`);
-    }
-    
-    
-    for (let i = 0; i < jsonIdentity.Rights.length; i++) {
-    	if(jsonIdentity.Rights[i].AppName == appId){
-    		const blankRights = {
-		    	AppName: '',
-		    	AllowedOp: ''
-		    };
-		jsonIdentity.Rights[i] = blankRights;
-    	}
-    }
-    
-    await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
-    return jsonIdentity.toString();
+	    const id = identityName + ':' + ctx.stub.getCreator().mspid;
+	    const identity = await ctx.stub.getState(id);  
+	    const jsonIdentity = JSON.parse(identity.toString());
+	    
+	    if(jsonIdentity.State == "DISMISSED"){
+	    	throw new Error(`ERROR: you cannot removed rights to a dismissed identity`);
+	    }
+	    
+	    
+	    for (let i = 0; i < jsonIdentity.Rights.length; i++) {
+	    	if(jsonIdentity.Rights[i].AppName == appId){
+	    		const blankRights = {
+			    	AppName: '',
+			    	AllowedOp: ''
+			    };
+			jsonIdentity.Rights[i] = blankRights;
+	    	}
+	    }
+	    
+	    ctx.stub.setEvent('rightsRemoval', Buffer.from(JSON.stringify(jsonIdentity)));
+	    await ctx.stub.putState(id, Buffer.from(JSON.stringify(jsonIdentity)));
+    	    return jsonIdentity.toString();
     }
     
     

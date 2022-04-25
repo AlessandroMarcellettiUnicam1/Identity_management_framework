@@ -11,7 +11,7 @@ if [ "$NETWORK" == "up" ] ; then
  ./networkDown.sh
  ./startFabric.sh javascript "false" ${CCNAME}
  ./startFabric.sh javascript "true" ${CCNAME2}
- ./startFabric.sh javascript "true" ${CCNAME3}
+ #./startFabric.sh javascript "true" ${CCNAME3}
 
 elif [ "$NETWORK" == "down" ] ; then
  ./networkDown.sh
@@ -20,6 +20,9 @@ elif [ "$NETWORK" == "deploy" ] ; then
 ./startFabric.sh javascript "false" ${CCNAME}
 
 fi
+node registerIdentity.js arguments -i sensor1 -t provideIdentity -p sensor1 LightSensor none none none --chaincode Identity_manager --contract identity_manager -n 1
+node registerIdentity.js arguments -i sensor1 -t test --chaincode ESC_network --contract ESC_network -n 1
+node registerIdentity.js arguments -i sensor1 -t createRights -p sensor1 ESC_network --chaincode Identity_manager --contract rights_manager -n 1
 #./launchTests.sh $1  $2 $3 $i $5  $6 $7
 #docker network connect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
 #cd main

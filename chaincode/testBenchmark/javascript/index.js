@@ -4,6 +4,6 @@
 
 'use strict';
 
-const rights_manager = require('./lib/testBenchmark');
+const testBenchmark = require('./lib/testBenchmark');
 module.exports.testBenchmark = testBenchmark;
 module.exports.contracts = [ testBenchmark ];

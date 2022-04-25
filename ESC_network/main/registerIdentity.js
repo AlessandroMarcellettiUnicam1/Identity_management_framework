@@ -12,33 +12,53 @@ const { exit } = require('process');
 
 let ccp;
 let wallet;
-let contractESC = {};
-let contractIdentity = {};
-let contractRights = {};
+//let contractESC = {};
+//let contractIdentity = {};
+let contract = {};
 
 const argv = yargs
-    .command('identityName','blabla',{
+    .command('arguments','blabla',{
         walletName: {
             description: 'wallet identity to use',
             alias: 'i',
             type: 'string',
         },
+        transactionName: {
+            description: 'transaction name',
+            alias: 't',
+            type: 'string',
+        },
+        transactionParams: {
+            description: 'transaction parameters',
+            alias: 'p',
+            type: 'array',
+        },  
+        chaincodeName: {
+            description: 'chaincode name',
+            alias: 'chaincode',
+            type: 'string',
+        }, 
+        contractName: {
+            description: 'contract name',
+            alias: 'contract',
+            type: 'string',
+        },       
         sensorNumber: {
             description: 'number of sensors to test',
-            alias: 'c',
+            alias: 'n',
             type: 'number',
         }}).help().alias('help', 'h').argv; 
         
         
         
-async function main(walletName, sensorNumber) {
+async function main(walletName, transactionName, transactionParams, chaincodeName, contractName, sensorNumber) {
     try {
-    	for(let i =1; i<=sensorNumber; i++){
+    	
     	console.log("iteration");
-		const identity = await takeUserWallet(walletName+i);
-		await getGatewayChaincode(walletName+i);
-		await invokeFunction(walletName+i, i);
-        }
+	const identity = await takeUserWallet(walletName);
+	await getGatewayChaincode(walletName, chaincodeName, contractName);
+	await invokeFunction(walletName, transactionName, transactionParams);
+        
 	
  	
     } catch (error) {
@@ -67,7 +87,7 @@ async function takeUserWallet(walletName){
         return identity;
 }
 
-async function getGatewayChaincode(walletName, contractName){
+async function getGatewayChaincode(walletName, chaincodeName, contractName){
 	const gateway = new Gateway();
         await gateway.connect(ccp, { wallet, identity: walletName, discovery: { enabled: true, asLocalhost: true } });
  	console.log('Connected to gateway');
@@ -75,18 +95,42 @@ async function getGatewayChaincode(walletName, contractName){
         const network = await gateway.getNetwork('mychannel');
 	 console.log('connected to channel');
         // Get the contract from the network.
-        contractESC = network.getContract('ESC_network', 'ESC_network');
-        contractRights = network.getContract('Identity_manager', 'rights_manager');
-        contractIdentity = network.getContract('Identity_manager', 'identity_manager');
-	//console.log('Connected to contract');
+        //contractESC = network.getContract('ESC_network', 'ESC_network');
+        //contractRights = network.getContract('Identity_manager', 'rights_manager');
+        contract = network.getContract(chaincodeName, contractName);
+	
+	
+	 const listener = async (event) => {
+                const eventResult = JSON.parse(event.payload.toString());
+			
+			    console.log(`-- Contract Event Received: ${event.eventName} - ${JSON.stringify(eventResult)}`);
+			
+			   // console.log(`*** Event: ${event.eventName}:${eventResult.ID}`);
+			
+			    const eventTransaction = event.getTransactionEvent();
+			    console.log(`*** transaction: ${eventTransaction.transactionId} status:${eventTransaction.status}`);
+		
+			    const eventBlock = eventTransaction.getBlockEvent();
+			    console.log(`*** block: ${eventBlock.blockNumber.toString()}`);
+            }
+
+		    // now start the client side event service and register the listener
+		    console.log(`--> Start contract event stream to peer in Org1`);
+            await contract.addContractListener(listener);
 }
 
-async function invokeFunction(walletName, sensorNumber){
-
+async function invokeFunction(walletName, transactionName, transactionParams){
+	console.log(transactionParams);
+	if(!transactionParams || transactionParams === '') {
+                await contract.submitTransaction(transactionName);
+        }else {
+                await contract.submitTransaction(transactionName, ...transactionParams);
+        }
 	
- 	const sensorid = await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor"+sensorNumber, "", "", "");
-        const newSensorid = (sensorid.toString());
-        console.log("Identity created: " + newSensorid);   
+	
+ 	//const sensorid = await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor"+sensorNumber, "", "", "");
+        //const newSensorid = (sensorid.toString());
+        //console.log("Identity created: " + newSensorid);   
 	
         
 
@@ -143,4 +187,4 @@ async function invokeFunction(walletName, sensorNumber){
 }
 
 
-main(argv.walletName, argv.sensorNumber);
+main(argv.walletName, argv.transactionName, argv.transactionParams, argv.chaincodeName, argv.contractName, argv.sensorNumber);
