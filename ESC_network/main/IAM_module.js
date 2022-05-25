@@ -17,7 +17,7 @@ let wallet;
 let contract = {};
 
 const argv = yargs
-    .command('arguments','blabla',{
+    .command('arguments','parameters to use',{
         walletName: {
             description: 'wallet identity to use',
             alias: 'i',
@@ -54,7 +54,7 @@ const argv = yargs
 async function main(walletName, transactionName, transactionParams, chaincodeName, contractName, sensorNumber) {
     try {
     	
-    	console.log("iteration");
+    	console.log("Retrieving devices wallet");
 	const identity = await takeUserWallet(walletName);
 	await getGatewayChaincode(walletName, chaincodeName, contractName);
 	await invokeFunction(walletName, transactionName, transactionParams);
@@ -76,7 +76,7 @@ async function takeUserWallet(walletName){
         const walletPath = path.join(process.cwd(), 'wallet');
         wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
-	//const identityName = 'sensor'+sensorNumber;
+
         // Check to see if we've already enrolled the user.
         const identity = await wallet.get(walletName);
         if (!identity) {
@@ -94,9 +94,6 @@ async function getGatewayChaincode(walletName, chaincodeName, contractName){
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork('mychannel');
 	 console.log('connected to channel');
-        // Get the contract from the network.
-        //contractESC = network.getContract('ESC_network', 'ESC_network');
-        //contractRights = network.getContract('Identity_manager', 'rights_manager');
         contract = network.getContract(chaincodeName, contractName);
 	
 	
@@ -105,8 +102,6 @@ async function getGatewayChaincode(walletName, chaincodeName, contractName){
 			
 			    console.log(`-- Contract Event Received: ${event.eventName} - ${JSON.stringify(eventResult)}`);
 			
-			   // console.log(`*** Event: ${event.eventName}:${eventResult.ID}`);
-			
 			    const eventTransaction = event.getTransactionEvent();
 			    console.log(`*** transaction: ${eventTransaction.transactionId} status:${eventTransaction.status}`);
 		
@@ -114,75 +109,22 @@ async function getGatewayChaincode(walletName, chaincodeName, contractName){
 			    console.log(`*** block: ${eventBlock.blockNumber.toString()}`);
             }
 
-		    // now start the client side event service and register the listener
+
 		    console.log(`--> Start contract event stream to peer in Org1`);
             await contract.addContractListener(listener);
 }
 
 async function invokeFunction(walletName, transactionName, transactionParams){
-	console.log(transactionParams);
+
 	if(!transactionParams || transactionParams === '') {
-                await contract.submitTransaction(transactionName);
+                const c = await contract.submitTransaction(transactionName);
+                console.log(Buffer.from(c).toString());
         }else {
-                await contract.submitTransaction(transactionName, ...transactionParams);
+                const c = await contract.submitTransaction(transactionName, ...transactionParams);
+                console.log(Buffer.from(c).toString());
         }
 	
-	
- 	//const sensorid = await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor"+sensorNumber, "", "", "");
-        //const newSensorid = (sensorid.toString());
-        //console.log("Identity created: " + newSensorid);   
-	
-        
 
-        /*await contractIdentity.submitTransaction('provideIdentity', walletName, "LightSensor", "", "", "");
-        //const newSensorid = (sensorid.toString());
-        console.log("Identity created");
-        
-	const c = await contractESC.submitTransaction('test');
-	//console.log(Buffer.from(c).toString());
-	console.log(`rights on app initialized with value:${Buffer.from(c).toString()}`);
-	
-	const c1 = await contractRights.submitTransaction('createRights', walletName, 'ESC_network');
-	console.log(Buffer.from(c1).toString());
-	console.log(`rights assigned to device: ${walletName}`);
-	
-	let result1 = await contractIdentity.evaluateTransaction('getSingleIdentity', walletName);
-	console.log(`*** Identity updated with rights: ${Buffer.from(result1).toString()}`);
-	
-	const c2 = await contractRights.submitTransaction('removeRights', walletName, 'ESC_network');
-	//console.log(Buffer.from(c1).toString());
-	console.log(`rights removed to device: ${walletName}`);
-	
-
-	let result3 = await contractIdentity.evaluateTransaction('getSingleIdentity', walletName);
-	console.log(`*** Identity updated with rights: ${Buffer.from(result3).toString()}`);
-	
-        console.log("Process terminated");*/
-        
-        
-        
-	//process.exit();
-	
-	/*let sensorid = await contract.submitTransaction('provideIdentity', identityName, "sensor", "", "", "");
-        const newSensorid = (sensorid.toString()).replace('"', '').replace('"', '');
-        
-	console.log(newSensorid);
-	
-	const rights = {
-	    Test1: "test",
-            Test2: "test" 
-	};
-	let result = await contract.evaluateTransaction('getSingleIdentity', newSensorid);
-	console.log(`*** Result prima di update: ${Buffer.from(result.toString())}`);
-	
-	await contract.submitTransaction('updateIdentityRights', newSensorid, "sensor", "", "", "", JSON.stringify(rights));
-	
-	let result3 = await contract.evaluateTransaction('getSingleIdentity', newSensorid);
-	console.log(`*** Result: ${Buffer.from(result3.toString())}`);
-	
-	await contract.submitTransaction('dismissIdentity', newSensorid);
-	let result4 = await contract.evaluateTransaction('getSingleIdentity', newSensorid);
-	console.log(`*** Result: ${Buffer.from(result4.toString())}`);*/
 
 }
 

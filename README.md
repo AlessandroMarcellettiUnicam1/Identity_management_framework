@@ -68,9 +68,9 @@ curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.1.0 1.4.6 0.4.18
 npm install
 ```
 
-# Elasticity experiments execution
+# Identity and Rights registration - Elasticity experiments execution
 
-In order to configurate and run an experiment , please check the [Experiments Guide](README_USE.md)
+In order to configurate and run identity and rights registration for sensors, launching then an experiment of the urban lighting system, please check the [Experiments Guide](README_USE.md)
 
 
 

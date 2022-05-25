@@ -8,7 +8,8 @@ docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prom
 docker network connect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
 cd main
 sleep 1
-./register.sh $1
+#./register.sh $1
+./registerSensors.sh $1
 node analysisManager.js launchListener -n $1 -m $2 -f $4 -t $5 -p $7 &
 WR=$!
 sleep 1

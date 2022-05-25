@@ -1,3 +1,23 @@
+# Register device
+
+go to **elastic-smart-contracts/ESC-network/identityManager** and run ./launchSimpleExperiments.sh up. this will create the network and deploy the two chaincodes containing the application and the I&AM managers. 
+
+Then move to **elastic-smart-contracts/ESC-network/main** and run node ./register.sh 1, this creates an admin certification for the gateway and it registers devices.
+
+
+```
+
+
+./register.sh 1
+node IAM_module.js arguments -i device1 -t provideIdentity -p sensor1 Actuator1 none none none --chaincode Identity_manager --contract identity_manager -n 1
+node IAM_module.js arguments -i device1 -t initRights --chaincode ESC_network --contract ESC_network -n 1
+node IAM_module.js arguments -i device1 -t createRights -p sensor1 ESC_network --chaincode Identity_manager --contract rights_manager -n 1
+
+```
+
+
+
+
 # Experiments configuration and execution
 
 1. Please read the README.md file first and install all necessary components first

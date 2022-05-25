@@ -9,7 +9,7 @@ const appRights = {
    ID: "ESC_network",
    AllowedOrgs: [{
       MSPName: 'Org1MSP',
-      AllowedOp: [{Type: 'WriteSensor', Op: 'WRITE'}, {Type: 'ReadSensor', Op: 'READ'}]
+      AllowedOp: [{Type: 'LightSensor1', Op: 'WRITE'}, {Type: 'Actuator1', Op: 'READ'}]
    }]
 };
         
@@ -23,8 +23,10 @@ class ESC_network extends Contract {
         
         console.info('============= END : Initialize Ledger ===========');
     }
+    
 
-    async test(ctx){
+
+    async initRights(ctx){
     	
         
         await ctx.stub.putState('ESC_network', Buffer.from(JSON.stringify(appRights)));

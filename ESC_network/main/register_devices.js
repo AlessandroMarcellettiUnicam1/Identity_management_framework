@@ -11,15 +11,14 @@ const fs = require('fs');
 const path = require('path');
 
 const argv = yargs
-    .command('numberSensors','blabla',{
-        sensorNumber: {
-            description: 'number of sensors to test',
+    .command('numberDevices','blabla',{
+        devices: {
+            description: 'number of devices to test',
             alias: 'n',
             type: 'number',
         }}).help().alias('help', 'h').argv; 
 
-async function main(numberSensor) {
-console.log('registering started');
+async function main(deviceNumber) {
     try {
         console.log('registering started');
         // load the network configuration
@@ -32,18 +31,18 @@ console.log('registering started');
 
         
 
-        for(let i =1; i<=numberSensor; i++){
+        for(let i =1; i<= deviceNumber; i++){
 		// Create a new file system based wallet for managing identities.
 		const walletPath = path.join(process.cwd(), 'wallet');
 		const wallet = await Wallets.newFileSystemWallet(walletPath);
 		console.log(`Wallet path: ${walletPath}`);
 
 		// Check to see if we've already enrolled the user.
-		const userIdentity = await wallet.get('sensor'+ i);
+		const userIdentity = await wallet.get('device'+ i);
 		if (userIdentity) {
 		
 		   console.log(`An identity for the user ${userIdentity}" already exists in the wallet`);
-		    console.log(`An identity for the user "sensor${numberSensor}" already exists in the wallet`);
+		    console.log(`An identity for the user "device${deviceNumber}" already exists in the wallet`);
 		    
 		}else{
 		// Check to see if we've already enrolled the admin user.
@@ -60,11 +59,11 @@ console.log('registering started');
  		// Register the user, enroll the user, and import the new identity into the wallet.
 		const secret = await ca.register({
 		    affiliation: 'org1.department1',
-		    enrollmentID: 'sensor'+i,
+		    enrollmentID: 'device'+i,
 		    role: 'client'
 		}, adminUser);
 		const enrollment = await ca.enroll({
-		    enrollmentID: 'sensor'+i,
+		    enrollmentID: 'device'+i,
 		    enrollmentSecret: secret
 		});
 		const x509Identity = {
@@ -75,8 +74,8 @@ console.log('registering started');
 		    mspId: 'Org1MSP',
 		    type: 'X.509',
 		};
-		await wallet.put('sensor'+i, x509Identity);
-		console.info(`Successfully registered and enrolled admin user "sensor${i}" and imported it into the wallet`);
+		await wallet.put('device'+i, x509Identity);
+		console.info(`Successfully registered and enrolled admin user "device${i}" and imported it into the wallet`);
 		}
 
 		
@@ -84,10 +83,10 @@ console.log('registering started');
         
 
     } catch (error) {
-        console.error(`Failed to register user "sensor${numberSensor}": ${error}`);
+        console.error(`Failed to register user "device${deviceNumber}": ${error}`);
         process.exit(1);
     }
 }
 
-main(argv.sensorNumber);
+main(argv.devices);
 
