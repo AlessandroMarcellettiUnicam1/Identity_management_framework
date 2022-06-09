@@ -35,9 +35,8 @@ class ESC_network extends Contract {
     }
     
     async checkRights(ctx, identityName, operation){
-    	const id = identityName + ':' + ctx.stub.getCreator().mspid;
     	
-        const deviceIdentityRaw = await ctx.stub.invokeChaincode('Identity_manager', ['getSingleIdentity', id], 'mychannel');
+        const deviceIdentityRaw = await ctx.stub.invokeChaincode('Identity_manager', ['getSingleIdentity', identityName], 'mychannel');
         const deviceIdentity = JSON.parse(Buffer.from(deviceIdentityRaw.payload).toString('utf8'));
        
         const rights = deviceIdentity.Rights;
@@ -62,7 +61,8 @@ class ESC_network extends Contract {
     
     async queryAllDetections(ctx, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
+    const ri = await this.checkRights(ctx, identityName, 'READ');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
     
@@ -86,9 +86,11 @@ class ESC_network extends Contract {
     
     async queryAllFlows(ctx, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
+    const ri = await this.checkRights(ctx, identityName, 'READ');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
+
         const startKey = 'CARFLOW0';
         const endKey = 'CARFLOW9999999999999999';
         const allResults = [];
@@ -109,9 +111,11 @@ class ESC_network extends Contract {
 
     async queryAllSensorsInRange(ctx, numberSensors, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
+    const ri = await this.checkRights(ctx, identityName, 'READ');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
+
         const startKey = 'SENSOR1';
         const endKey = 'SENSOR'+(parseInt(numberSensors)+1);
         const allResults = [];
@@ -132,9 +136,11 @@ class ESC_network extends Contract {
 
     async createDetection(ctx, numberSensor, detectionNumber, sensorKilometer, direction, numberCars, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'WRITE') == false){
+    const ri = await this.checkRights(ctx, identityName, 'WRITE');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
+
         let detectionDateTime = Date.now();
         let sensor = parseInt(numberSensor)
         const detection = {
@@ -145,7 +151,6 @@ class ESC_network extends Contract {
             sensorKilometer
         };
 
-        // Añadir la resolución a los datos y cambiar de zona a unico punto, hacer el flujo en cuanto a cada sensor junto con un agregador
     
         if(direction === 'ascendent'){
             detection.direction = 'ASCENDENT';
@@ -158,9 +163,11 @@ class ESC_network extends Contract {
     
     async calculateFlow(ctx, calculationNumber, streetId, fromDate, numberSensors, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'WRITE') == false){
+    const ri = await this.checkRights(ctx, identityName, 'WRITE');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
+
         let totalBeginHR = process.hrtime();
         let totalBegin = totalBeginHR[0] * 1000000 + totalBeginHR[1] / 1000;
         let toDate = Date.now();
@@ -214,9 +221,11 @@ class ESC_network extends Contract {
     
     async queryDetectionsInRange(ctx,startDate, endDate, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
+    const ri = await this.checkRights(ctx, identityName, 'READ');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
+
         const allResults = [];
         for await (const {key, value} of ctx.stub.getStateByRange(startDate, endDate)) {
             const strValue = Buffer.from(value).toString('utf8');
@@ -234,10 +243,8 @@ class ESC_network extends Contract {
     }
     
     async queryCalculate(ctx, fromDate, toDate, numberSensor) {
-    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
-    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
-    }*/
+
+
         let queryString = `{
             "selector": {
                 "sensor": {
@@ -254,10 +261,6 @@ class ESC_network extends Contract {
     }
 
     async querySensor(ctx, numberSensor) {
-    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
-    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
-    }*/
         let queryString = `{
             "selector": {
                 "numberSensor": {
@@ -269,7 +272,6 @@ class ESC_network extends Contract {
     
     }
  
-    //this should be create identity
     async createSensor(ctx, numberSensor) {
         
     
@@ -284,7 +286,8 @@ class ESC_network extends Contract {
     //Write rights check
     async updateData(ctx, numberSensor, detections, timeData, frequency, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'WRITE') == false){
+    const ri = await this.checkRights(ctx, identityName, 'WRITE');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
         let s = await this.querySensor(ctx, parseInt(numberSensor));
@@ -314,9 +317,13 @@ class ESC_network extends Contract {
     //Writing rights check
     async analysis(ctx, streetFlow, timeData, fromDates, numberSensors, frequency, identityName) {
     const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'WRITE') == false){
+    const ri = await this.checkRights(ctx, identityName, 'WRITE');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
+    /*if(checkRights(ctx, id, 'WRITE') == false){
+    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
+    }*/
         let totalBeginHR = process.hrtime();
         let totalBegin = totalBeginHR[0] * 1000000 + totalBeginHR[1] / 1000;
 
@@ -414,9 +421,10 @@ class ESC_network extends Contract {
     //Reading rights control
     async evaluateHistory(ctx, timeData, calculateTime, maxCalculateTime, minCalculateTime, identityName) {
         const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
-    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
-    }
+        const ri = await this.checkRights(ctx, identityName, 'READ');
+	if(ri == false){
+	    throw new Error(`ERROR: The provided identity has no rights for this operation`);
+	}
         if(parseInt(calculateTime) >= parseInt(maxCalculateTime)*0.9){
             return JSON.parse(parseInt(timeData)*0.75);
         }else if(parseInt(calculateTime) <= parseInt(minCalculateTime)*1.1){
@@ -430,7 +438,8 @@ class ESC_network extends Contract {
     //Reading rights control
     async evaluateFrequency(ctx, frequency, calculateTime, maxCalculateTime, minCalculateTime, identityName) {
         const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
+        const ri = await this.checkRights(ctx, identityName, 'READ');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
         if(parseFloat(calculateTime) >= parseFloat(maxCalculateTime)*0.9){
@@ -444,10 +453,6 @@ class ESC_network extends Contract {
     }
 
     async querySensor2(ctx, numberSensor) {
-    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
-    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
-    }*/
         let res = await this.querySensor(ctx, numberSensor);
 
         return JSON.parse(res.toString())[0].Record.detections;
@@ -455,10 +460,6 @@ class ESC_network extends Contract {
     }
 
     async queryStreetFlows(ctx, streetId) {
-    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
-    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
-    }*/
         let queryString = `{
             "selector": {
                 "streetId": {
@@ -466,16 +467,16 @@ class ESC_network extends Contract {
                 }
             }
         }`;
-        return this.queryWithQueryString(ctx, queryString, identityName);
+        return this.queryWithQueryString(ctx, queryString);
     
     }
 
     async createStreetFlows(ctx, streetId, identityName) {
         const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'WRITE') == false){
+        const ri = await this.checkRights(ctx, identityName, 'WRITE');
+    if(ri == false){
     	throw new Error(`ERROR: The provided identity has no rights for this operation`);
     }
-    
         const streetflows = {
             streetId: parseInt(streetId),
             flows: [],
@@ -485,10 +486,6 @@ class ESC_network extends Contract {
     }
         
     async queryWithQueryString(ctx, queryString) {
-    /*const id = identityName + ':' + ctx.stub.getCreator().mspid;
-    if(checkRights(id, 'READ') == false){
-    	throw new Error(`ERROR: The provided identity has no rights for this operation`);
-    }*/
         console.log('query String');
         console.log(JSON.stringify(queryString));
     

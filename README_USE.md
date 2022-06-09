@@ -1,28 +1,37 @@
-# Register device
+# Device Identity and Rights registration
 
-go to **elastic-smart-contracts/ESC-network/identityManager** and run ./launchSimpleExperiments.sh up. this will create the network and deploy the two chaincodes containing the application and the I&AM managers. 
+go to **/Identity_management_framework/ESC-network/IdentityManager** and run ./launchSimpleExperiments.sh up. this will create the network and deploy the two chaincodes containing the application and the I&AM managers. 
 
-Then move to **elastic-smart-contracts/ESC-network/main** and run node ./register.sh 1, this creates an admin certification for the gateway and it registers devices.
+Then move to **Identity_management_framework/ESC-network/main** and run node ./register.sh 1, this creates an admin certification for the gateway and it registers devices.
 
-
-```
-
-
-./register.sh 1
+At this point, the script ./IAM_module.js can be used to interact with the smart contracts to create an identity and assign the related rights.
+To  run it use:
 node IAM_module.js arguments -i device1 -t provideIdentity -p sensor1 Actuator1 none none none --chaincode Identity_manager --contract identity_manager -n 1
 node IAM_module.js arguments -i device1 -t initRights --chaincode ESC_network --contract ESC_network -n 1
 node IAM_module.js arguments -i device1 -t createRights -p sensor1 ESC_network --chaincode Identity_manager --contract rights_manager -n 1
 
-```
+To customise the examples, you can follow the parameters described below:
+- **i**: identity of the device to use
+- **t**: name of the function to execute
+- **p**: list of function parameters
+- **chaincode**: name of the chaincode to retrieve
+- **contract**: name of the contract to invoke
 
+# Basic Experiments configuration and execution
 
+To execute an example of the urban lighting system, go to **Identity_management_framework/ESC-network/main** and run
+node IAM_module.js arguments -i device1 -t createSensor -p 1 sensor1 --chaincode ESC_network --contract ESC_network -n 1
 
+Then, move to **Identity_management_framework/ESC-network/SimpleExperiment** and run
+./launchSimpleExperiment.sh
 
-# Experiments configuration and execution
+This will start the measurement of the previosulr registered sensor, authenticated using its rights.
+
+# Elastic Experiments configuration and execution
 
 1. Please read the README.md file first and install all necessary components first
 
-2. go to **elastic-smart-contracts/ESC-network/ExperimentSetElasticity** and run ./launchExperimentsElastic.sh with the necessary parameters, if you run it without any, an error message will appear explaining each parameter:
+2. go to **Identity_management_framework/ESC-network/ExperimentSetElasticity** and run ./launchExperimentsElastic.sh with the necessary parameters, if you run it without any, an error message will appear explaining each parameter:
 
 - **Number of sensors**: number of sensors to simulate in the experiments.
 
@@ -110,20 +119,3 @@ Two .csv files will be generated for each experiments, one containing the analyt
 - **MINIMUM_TIME**: minimum execution time established by elasticity rules.
 
 - **MAXIMUM_TIME**: maximum execution time established by elasticity rules.
-
-# Performance Analysis
-
-There are 3 key graphs that could be made to use the results data from the calculations result csv file, but these are just examples as more you can have more uses for the data:
-
-1. Comparison between the calculated flow (**CARS_PER_SECOND_TOTAL**), the real flow (**REAL_CARS_PER_SECOND_TOTAL**) and the real instantaneous flow (**REAL_CARS_PER_SECOND**):
-
-![dataSource](images/graph1.png)
-
-2. Graphic used to observe how the amount of detections objects stored (**DETECTIONS_STORED**) affects the execution time (**TOTAL_TIME**) :
-
-![dataSource](images/graph2.png)
-
-3. Graphic comparing the changes to frequency update (**FREQUENCY_DATA**) or time window (**TIME_DATA**) and the calculation of cars per second (**CARS_PER_SECOND_TOTAL** and **REAL_CARS_PER_SECOND_TOTAL**) , to see how it affects the calculation  result, the next one compares it against time window:
-
-![dataSource](images/graph3.png)
-

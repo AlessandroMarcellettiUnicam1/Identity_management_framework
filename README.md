@@ -3,7 +3,7 @@
 # Installation instructions
 
 ## Requirements
-This guide has been developed in Ubuntu 18.04. It is recommended to update the system packages before starting the installation procedure (with: ```sudo apt update```)
+This guide has been tested in Ubuntu 18.04. and 20.04. It is recommended to update the system packages before starting the installation procedure (with: ```sudo apt update```)
 
 ## Steps
 1. Install Git if you don not have it already:
@@ -63,7 +63,7 @@ curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.1.0 1.4.6 0.4.18
     
     (bin is already in the .gitignore file but you should be careful not to upload the uncommented line of network.sh)
 
-9. go to **elastic-smart-contracts/ESC-network/main** and run: 
+9. go to **Identity_management_framework/ESC-network/main** and run: 
 ```
 npm install
 ```
@@ -71,41 +71,3 @@ npm install
 # Identity and Rights registration - Elasticity experiments execution
 
 In order to configurate and run identity and rights registration for sensors, launching then an experiment of the urban lighting system, please check the [Experiments Guide](README_USE.md)
-
-
-
-# Performance Monitoring
-In order to analyze the general performance of the chain, prometheus ecosystem can be installed: 
-
-1. Once you have cloned the elastic smart contracts repository you can see a file named **prometheus.yml** inside a folder called **prometheus**.
-
-2. Run the following command: 
-```
-docker start -i $(docker ps -a -q --filter ancestor=prom/prometheus) || docker run -p 9090:9090 -v <path to prometheus.yml>:/etc/prometheus/prometheus.yml prom/prometheus
-
-```
-This will start the prometheus container if you already have it or run it otherwise, if it is the first time you run this command make sure to add the path to prometheus.yaml as indicated.
-
- sudo docker run -p 9090:9090 -v /home/winterschool20/Downloads/identity_management_framework/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
-
-
-3. Go to http://localhost:9090/targets and check that Prometheus is up and running, you can observe now how the peer targets are down showing the error "server misbehaving", this is normal behaviour due to prometheus not being yet connected to the blockchain network.
-
-    -3.1 The experiment scripts are programmed to connect and disconnect automatically prometheus to the network, but you can do it manually with the following                     
-    commands if you wish to do so:
-    ```
-    docker network connect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
-
-    docker network disconnect net_test $(docker ps -a -q --filter ancestor=prom/prometheus)
-    ```
-    
-4. Run and open Grafana and add a new dataSource to look like this:
-
-docker run -d -p 3000:3000 grafana/grafana-enterprise
- 
-![dataSource](prometheus/Grafana_dataSource.png)
-
-5. Import the Grafana dashboard through the Json file contained within the prometheus folder.
-
-6. [Run any experiment](README_USE.md) to see the results.
-

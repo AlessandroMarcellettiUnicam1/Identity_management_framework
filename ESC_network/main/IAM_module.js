@@ -107,6 +107,7 @@ async function getGatewayChaincode(walletName, chaincodeName, contractName){
 		
 			    const eventBlock = eventTransaction.getBlockEvent();
 			    console.log(`*** block: ${eventBlock.blockNumber.toString()}`);
+			    exit();
             }
 
 
@@ -119,9 +120,11 @@ async function invokeFunction(walletName, transactionName, transactionParams){
 	if(!transactionParams || transactionParams === '') {
                 const c = await contract.submitTransaction(transactionName);
                 console.log(Buffer.from(c).toString());
+
         }else {
                 const c = await contract.submitTransaction(transactionName, ...transactionParams);
                 console.log(Buffer.from(c).toString());
+
         }
 	
 

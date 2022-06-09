@@ -297,12 +297,13 @@ async function analysis(timeData, fromDate, numberSensors, frequency) {
 
         // Get the contract from the network.
         const contract = network.getContract('ESC_network');
+        
 
         const result = await contract.evaluateTransaction('queryStreetFlows', 1);
-
+	console.log('RESULT OF THE QUERY STREET FLOW' + result.toString());
 
         // Submit the specified transaction.
-        await contract.submitTransaction('analysis', result.toString(), timeData, fromDate, numberSensors, frequency);
+        await contract.submitTransaction('analysis', result.toString(), timeData, fromDate, numberSensors, frequency, 'sensor1');
 
         // Disconnect from the gateway.
         await gateway.disconnect();
